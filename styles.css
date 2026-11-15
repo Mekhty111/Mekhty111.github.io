@@ -199,6 +199,9 @@ body::before {
 .btn--solid { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .btn--ghost { background: color-mix(in srgb, var(--surface) 60%, transparent); backdrop-filter: blur(6px); }
 .btn--ghost:hover { border-color: var(--text); }
+.btn__icon { flex: none; margin-right: 2px; }
+.contact__label { display: inline-flex; align-items: center; gap: 14px; }
+.contact__icon { flex: none; width: 22px; height: 22px; opacity: 0.85; }
 
 /* ==========================================================================
    Hero
@@ -454,6 +457,24 @@ body::before {
 .is-visible .draw { stroke-dashoffset: 0; }
 
 /* ==========================================================================
+   Logos (companies, schools, certificate issuers)
+   ========================================================================== */
+.logo { display: inline-flex; flex: none; align-items: center; }
+.logo img, .logo__initials {
+  width: 48px; height: 48px; border-radius: 12px;
+  object-fit: contain; background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+.logo__initials {
+  display: grid; place-items: center;
+  background: var(--surface-2); color: var(--text-2);
+  font-family: var(--f-mono); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em;
+}
+.logo--pair img + img, .logo--pair img + .logo__initials { margin-left: -12px; outline: 3px solid var(--surface); }
+.cert__badge img, .cert__badge .logo__initials { width: 44px; height: 44px; }
+
+/* ==========================================================================
    Timeline
    ========================================================================== */
 .timeline { list-style: none; margin: 0; padding: 0; position: relative; }
@@ -465,20 +486,15 @@ body::before {
   border-bottom: 1px solid var(--line);
 }
 .tl:first-child { padding-top: 0; }
-.tl__period { color: var(--muted); padding-top: 6px; }
-.tl__type {
-  display: inline-block; margin-top: 8px;
-  font-family: var(--f-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;
-  padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line);
-  color: var(--text-2);
-}
+.tl__period { color: var(--muted); padding-top: 12px; }
+.tl__head { display: flex; align-items: center; gap: 16px; }
 .tl__title { font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.2; }
 .tl__org { color: var(--accent-text); margin-top: 4px; font-size: 0.98rem; }
 .tl__points { margin: 12px 0 0; padding: 0; list-style: none; color: var(--text-2); }
 .tl__points li { position: relative; padding-left: 18px; margin-top: 6px; }
 .tl__points li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 8px; height: 1px; background: var(--muted); }
 .tl--empty { color: var(--muted); }
-@media (max-width: 640px) { .tl { grid-template-columns: 1fr; gap: 6px; } }
+@media (max-width: 640px) { .tl { grid-template-columns: 1fr; gap: 10px; } .tl__period { padding-top: 0; } }
 
 /* ==========================================================================
    Certificates
@@ -494,12 +510,7 @@ body::before {
   transition: transform 0.3s var(--ease), border-color 0.3s;
 }
 a.cert:hover { transform: translateY(-3px); border-color: var(--line-strong); }
-.cert__badge {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: grid; place-items: center;
-  background: var(--surface-2); border: 1px solid var(--line);
-  margin-bottom: 10px;
-}
+.cert__badge { margin-bottom: 10px; }
 .cert__title { font-size: 1.12rem; font-weight: 500; line-height: 1.3; }
 .cert__issuer { color: var(--text-2); font-size: 0.92rem; }
 .cert__meta { margin-top: auto; padding-top: 10px; display: flex; align-items: center; gap: 8px; color: var(--muted); }
@@ -534,9 +545,9 @@ a.cert:hover .cert__verify { opacity: 1; }
   font-size: clamp(1.1rem, 2vw, 1.4rem);
   transition: color 0.2s, padding 0.3s var(--ease);
 }
-.contact__link span:last-child { transition: transform 0.3s var(--ease); }
+.contact__link > span:last-child { transition: transform 0.3s var(--ease); }
 .contact__link:hover { color: var(--accent-text); padding-left: 14px; }
-.contact__link:hover span:last-child { transform: translate(4px, -4px); }
+.contact__link:hover > span:last-child { transform: translate(4px, -4px); }
 .contact__link small { display: block; font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); }
 
 .footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--text-2); }
@@ -577,4 +588,6 @@ a.cert:hover .cert__verify { opacity: 1; }
   .contact__link { padding: 6pt 0; font-size: 11pt; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #666; }
   .contact__link::after, .card::after { content: none !important; }
+  .logo img, .logo__initials { box-shadow: none; }
+  .tl, .cert { break-inside: avoid; }
 }

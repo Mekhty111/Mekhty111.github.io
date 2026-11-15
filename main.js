@@ -196,36 +196,61 @@
   }
 
   /* ---------------------------------------------------------------------
-     Timeline (experience + education)
+     Logos — image from assets/logos/, initials as a fallback
      --------------------------------------------------------------------- */
-  const tlItems = [
-    ...(R.experience || []).map((e) => ({ ...e, type: "Work" })),
-    ...(R.education || []).map((e) => ({ ...e, type: "Education" })),
-  ];
-  $("#timeline").innerHTML = tlItems
-    .map(
-      (t, i) => `<li class="tl reveal" style="--d:${i * 0.06}s">
-        <div><div class="tl__period mono">${esc(t.period)}</div><span class="tl__type">${esc(t.type)}</span></div>
-        <div>
-          <h3 class="tl__title">${esc(t.title)}</h3>
-          <div class="tl__org">${esc(t.org)}${t.place ? ` · <span class="muted">${esc(t.place)}</span>` : ""}</div>
+  const initials = (name) =>
+    (name || "?")
+      .split(/[\s·×—-]+/)
+      .filter((w) => /^[A-ZА-ЯЁ0-9]/.test(w))
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("") || (name || "?")[0];
+  const logoImg = (file, alt) =>
+    `<img src="assets/logos/${esc(file)}" alt="${esc(alt)}" width="44" height="44" loading="lazy" decoding="async"
+      onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'logo__initials',textContent:this.dataset.fallback}))"
+      data-fallback="${esc(initials(alt))}" />`;
+  const logo = (files, name, cls = "") => {
+    const list = [].concat(files || []).filter(Boolean);
+    const inner = list.length
+      ? list.map((f) => logoImg(f, name)).join("")
+      : `<span class="logo__initials">${esc(initials(name))}</span>`;
+    return `<span class="logo ${list.length > 1 ? "logo--pair" : ""} ${cls}" aria-hidden="true">${inner}</span>`;
+  };
+
+  /* ---------------------------------------------------------------------
+     Experience & Education — two separate timelines
+     --------------------------------------------------------------------- */
+  const timeline = (items) =>
+    (items || [])
+      .map(
+        (t, i) => `<li class="tl reveal" style="--d:${i * 0.06}s">
+        <div class="tl__period mono">${esc(t.period)}</div>
+        <div class="tl__body">
+          <div class="tl__head">
+            ${logo(t.logo, t.org, "tl__logo")}
+            <div>
+              <h3 class="tl__title">${esc(t.title)}</h3>
+              <div class="tl__org">${esc(t.org)}${t.place ? ` · <span class="muted">${esc(t.place)}</span>` : ""}</div>
+            </div>
+          </div>
           ${t.points && t.points.length ? `<ul class="tl__points">${t.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}
         </div>
       </li>`
-    )
-    .join("");
+      )
+      .join("");
+  $("#experienceList").innerHTML = timeline(R.experience);
+  $("#educationList").innerHTML = timeline(R.education);
 
   /* ---------------------------------------------------------------------
      Certificates
      --------------------------------------------------------------------- */
-  const badge = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7"/></svg>`;
   $("#certs").innerHTML = (R.certificates || [])
     .map((c, i) => {
       const tag = c.url ? "a" : "div";
       const attrs = c.url ? ` href="${esc(c.url)}" target="_blank" rel="noopener"` : "";
       const done = c.status === "done";
       return `<${tag} class="cert reveal" style="--d:${i * 0.06}s"${attrs}>
-        <span class="cert__badge" aria-hidden="true">${badge}</span>
+        ${logo(c.logo, c.issuer, "cert__badge")}
         <span class="cert__title">${esc(c.title)}</span>
         <span class="cert__issuer">${esc(c.issuer)}</span>
         <span class="cert__meta mono"><span class="status ${done ? "status--done" : ""}">${done ? "Issued" : "In progress"}</span>${esc(c.date)}${c.url ? `<span class="cert__verify">verify ↗</span>` : ""}</span>
@@ -237,15 +262,19 @@
   /* ---------------------------------------------------------------------
      Contact
      --------------------------------------------------------------------- */
+  const iconOf = (name) => {
+    const src = document.querySelector(`[data-href="${name}"] .btn__icon`);
+    return src ? src.outerHTML.replace("btn__icon", "contact__icon") : "";
+  };
   const contacts = [
-    R.links.email && { label: "Email", sub: R.links.email, href: "mailto:" + R.links.email },
-    R.links.linkedin && { label: "LinkedIn", sub: "in/mekhty-mekhtyev", href: R.links.linkedin },
-    R.links.github && { label: "GitHub", sub: "@Mekhty111", href: R.links.github },
+    R.links.email && { label: "Email", sub: R.links.email, href: "mailto:" + R.links.email, icon: "" },
+    R.links.linkedin && { label: "LinkedIn", sub: "in/mekhty-mekhtyev", href: R.links.linkedin, icon: iconOf("linkedin") },
+    R.links.github && { label: "GitHub", sub: "@Mekhty111", href: R.links.github, icon: iconOf("github") },
   ].filter(Boolean);
   $("#contactLinks").innerHTML = contacts
     .map(
       (c) => `<a class="contact__link" href="${esc(c.href)}" ${c.href.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>
-        <span>${esc(c.label)}<small>${esc(c.sub)}</small></span><span aria-hidden="true">↗</span></a>`
+        <span class="contact__label">${c.icon}<span>${esc(c.label)}<small>${esc(c.sub)}</small></span></span><span aria-hidden="true">↗</span></a>`
     )
     .join("");
 

@@ -8,8 +8,9 @@ All content lives in **`data.js`** — name, about, stats, skills, projects, exp
 
 - **New project card:** add an object to `projects` (`id`, `title`, `kicker`, `description`, `tags`, `metrics`, `url`, `year`). Cards link to `url`.
 - **Link a skill to a project:** add the project `id` to the skill's `projects` array — hovering the skill highlights the card.
-- **Work experience:** add entries to `experience` — they appear in the timeline above education.
+- **Work experience / education:** add entries to `experience` or `education` — each has its own section.
 - **Certificates:** add to `certificates`, `status: "done"` + `url` to make the card a link.
+- **Logos:** put the image in `assets/logos/` and set `logo: "file.png"` on an experience, education or certificate entry (an array for co-issued certificates). Without a logo the initials are shown.
 
 ## Run locally
 

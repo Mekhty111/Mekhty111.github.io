@@ -122,14 +122,18 @@ window.RESUME = {
     },
   ],
 
+  /* Logos: drop an image into assets/logos/ and put its file name in `logo`.
+     Without a logo the organisation's initials are shown instead. */
+
   /* Work experience. Add entries like:
-     { period: "2025 — Now", title: "Data Scientist", org: "Company", place: "Baku",
+     { period: "2025 — Now", title: "Data Scientist", org: "Company", logo: "company.png", place: "Baku",
        points: ["What you did", "Impact with a number"] } */
   experience: [
     {
       period: "Feb 2026 — Now",
       title: "Data Scientist",
       org: "Yelo Bank",
+      logo: "yelo.png",
       place: "Baku",
       points: ["Full-time role after the internship, continuing work on the bank's production ML systems."],
     },
@@ -137,6 +141,7 @@ window.RESUME = {
       period: "Jul 2025 — Feb 2026",
       title: "Intern Data Scientist",
       org: "Yelo Bank",
+      logo: "yelo.png",
       place: "Baku",
       points: [
         "Retail Personalized Offer — model that computes a maximum personalized credit offer per client and predicts whether they can handle it. Rewrote the DB layer, moved to parallel processing with Python multiprocessing (17–20× speedup), added decorator-based logging and automatic result persistence: 5,000 clients went from 14.5 hours to 45 minutes.",
@@ -148,6 +153,7 @@ window.RESUME = {
       period: "Sep 2025 — Dec 2025",
       title: "Youth STEM Mentor",
       org: "Algorithmics Global",
+      logo: "algorithmics.png",
       place: "National School Hackathon",
       points: [
         "Mentored five teams at the 48-hour National School Hackathon (Ministry of Science and Education × Algorithmics Global) — 300 finalists selected from 350,000+ participants.",
@@ -161,6 +167,7 @@ window.RESUME = {
       period: "2024 — 2026",
       title: "Data Science & ML Engineer program",
       org: "Skillfactory",
+      logo: "skillfactory.jpg",
       points: [
         "Applied ML track: classical ML, gradient boosting, neural networks, MLOps basics.",
         "Project-based: HH.ru vacancy analysis, Booking.com rating prediction, bank marketing, NYC taxi trip duration.",
@@ -170,34 +177,36 @@ window.RESUME = {
       period: "2022 — 2026",
       title: "B.Sc. Computer Science",
       org: "Azerbaijan State Oil and Industrial University",
+      logo: "adnsu.svg",
       points: ["Algorithms and data structures, databases, software engineering."],
     },
   ],
 
-  /* Certificates. status: "done" | "progress" */
+  /* Certificates. status: "done" | "progress"
+     logo: file name in assets/logos/ (an array for co-issued certificates). */
   certificates: [
-    { title: "Machine Learning Specialization", issuer: "DeepLearning.AI · Stanford", date: "Jul 2025", status: "done",
+    { title: "Machine Learning Specialization", issuer: "DeepLearning.AI · Stanford", logo: ["deeplearning-ai.png", "stanford.png"], date: "Jul 2025", status: "done",
       url: "https://www.coursera.org/account/accomplishments/specialization/ORCCZ7UI5AJW" },
-    { title: "Machine Learning in Production", issuer: "DeepLearning.AI", date: "Jul 2025", status: "done",
+    { title: "Machine Learning in Production", issuer: "DeepLearning.AI", logo: "deeplearning-ai.png", date: "Jul 2025", status: "done",
       url: "https://www.coursera.org/account/accomplishments/records/RLCJMS8CFQBI" },
-    { title: "OCI 2025 Certified AI Foundations Associate", issuer: "Oracle", date: "Jun 2025", status: "done",
+    { title: "OCI 2025 Certified AI Foundations Associate", issuer: "Oracle", logo: "oracle.png", date: "Jun 2025", status: "done",
       url: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=6EC9954F8D8095AED23B275C3B101E8190C109B8C8F61A801A1D8707B828E408" },
-    { title: "Advanced Learning Algorithms", issuer: "DeepLearning.AI · Stanford", date: "Jul 2025", status: "done",
+    { title: "Advanced Learning Algorithms", issuer: "DeepLearning.AI · Stanford", logo: ["deeplearning-ai.png", "stanford.png"], date: "Jul 2025", status: "done",
       url: "https://www.coursera.org/account/accomplishments/records/S4DNLIBALI2T" },
-    { title: "Supervised Machine Learning: Regression and Classification", issuer: "DeepLearning.AI · Stanford", date: "Jul 2025", status: "done",
+    { title: "Supervised Machine Learning: Regression and Classification", issuer: "DeepLearning.AI · Stanford", logo: ["deeplearning-ai.png", "stanford.png"], date: "Jul 2025", status: "done",
       url: "https://www.coursera.org/account/accomplishments/records/BFMGJAN307ME" },
-    { title: "Unsupervised Learning, Recommenders, Reinforcement Learning", issuer: "DeepLearning.AI · Stanford", date: "Jul 2025", status: "done",
+    { title: "Unsupervised Learning, Recommenders, Reinforcement Learning", issuer: "DeepLearning.AI · Stanford", logo: ["deeplearning-ai.png", "stanford.png"], date: "Jul 2025", status: "done",
       url: "https://www.coursera.org/account/accomplishments/records/QP86DQJS8U59" },
-    { title: "AI & ML — AI Unleashed: From Basics to Neural Brilliance", issuer: "Coursera", date: "Jul 2025", status: "done",
+    { title: "AI & ML — AI Unleashed: From Basics to Neural Brilliance", issuer: "Coursera", logo: "coursera.png", date: "Jul 2025", status: "done",
       url: "https://www.coursera.org/account/accomplishments/badge/Q5PuhtqRSzeT7obakUs3Ag" },
-    { title: "Dataiku Core Designer", issuer: "Dataiku", date: "Jul 2025", status: "done",
+    { title: "Dataiku Core Designer", issuer: "Dataiku", logo: "dataiku.png", date: "Jul 2025", status: "done",
       url: "https://verify.skilljar.com/c/onxu99h7vscy" },
-    { title: "SQL (Advanced)", issuer: "HackerRank", date: "Jul 2024", status: "done",
+    { title: "SQL (Advanced)", issuer: "HackerRank", logo: "hackerrank.jpg", date: "Jul 2024", status: "done",
       url: "https://www.hackerrank.com/certificates/2ef8c622fad3" },
-    { title: "SQL (Intermediate)", issuer: "HackerRank", date: "Jul 2024", status: "done",
+    { title: "SQL (Intermediate)", issuer: "HackerRank", logo: "hackerrank.jpg", date: "Jul 2024", status: "done",
       url: "https://www.hackerrank.com/certificates/f732fcaea704" },
-    { title: "Software Testing — 256 h, 94/100", issuer: "CodeForFuture · Ministry of Science and Education × Algorithmics", date: "", status: "done", url: "" },
-    { title: "Data Science & ML Engineer", issuer: "Skillfactory", date: "2026", status: "progress", url: "" },
+    { title: "Software Testing — 256 h, 94/100", issuer: "CodeForFuture · Ministry of Science and Education × Algorithmics", logo: "algorithmics.png", date: "", status: "done", url: "" },
+    { title: "Data Science & ML Engineer", issuer: "Skillfactory", logo: "skillfactory.jpg", date: "2026", status: "progress", url: "" },
   ],
 
   languages: [
