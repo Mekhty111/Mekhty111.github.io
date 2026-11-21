@@ -16,14 +16,65 @@
     if (url) el.href = url;
     else el.remove();
   });
+  $$("[data-cv]").forEach((el) => {
+    if (R.cv) el.href = R.cv;
+    else el.remove();
+  });
   $("#avatar").src = R.avatar;
+
+  /* ---------------------------------------------------------------------
+     Dates — "Jul 2025 — Feb 2026" / "— Now" → "8 mos", "1 yr 4 mos"
+     --------------------------------------------------------------------- */
+  const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const parseMonth = (str) => {
+    const t = String(str || "").trim().toLowerCase();
+    if (/^(now|present|today)$/.test(t)) {
+      const d = new Date();
+      return d.getFullYear() * 12 + d.getMonth();
+    }
+    const m = t.match(/^([a-z]{3})[a-z]*\.?\s+(\d{4})$/);
+    if (!m || MONTHS.indexOf(m[1]) < 0) return null;
+    return +m[2] * 12 + MONTHS.indexOf(m[1]);
+  };
+  const fmtMonths = (n) => {
+    const y = Math.floor(n / 12), mo = n % 12, out = [];
+    if (y) out.push(`${y} yr${y > 1 ? "s" : ""}`);
+    if (mo || !y) out.push(`${mo || 1} mo${(mo || 1) > 1 ? "s" : ""}`);
+    return out.join(" ");
+  };
+  // inclusive, like LinkedIn: Jul–Feb = 8 months
+  const span = (from, to) => {
+    const a = parseMonth(from), b = parseMonth(to);
+    return a == null || b == null || b < a ? "" : fmtMonths(b - a + 1);
+  };
+  const duration = (period) => {
+    const parts = String(period || "").split(/\s*[—–-]\s*/);
+    return parts.length === 2 ? span(parts[0], parts[1]) : "";
+  };
   $("#year").textContent = new Date().getFullYear();
+
+  /* At a glance */
+  const fill = (str) => str.replace("{experienceSince}", span(R.experienceSince, "now") || R.experienceSince || "");
+  $("#glance").innerHTML = (R.glance || [])
+    .map((g) => `<div><dt>${esc(g.label)}</dt><dd>${esc(fill(g.value))}</dd></div>`)
+    .join("");
+
+  /* Contact line that only shows in the printed / PDF version */
+  const host = (u) => u.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  $("#printContacts").innerHTML = [
+    R.location && esc(R.location),
+    R.links.email && `<a href="mailto:${esc(R.links.email)}">${esc(R.links.email)}</a>`,
+    R.links.phone && esc(R.links.phone),
+    ...[R.links.linkedin, R.links.github, R.site].filter(Boolean).map((u) => `<a href="${esc(u)}">${esc(host(u))}</a>`),
+  ]
+    .filter(Boolean)
+    .join("  ·  ");
 
   /* About */
   $("#aboutParagraphs").innerHTML = R.about.map((p) => `<p>${esc(p)}</p>`).join("");
   $("#stats").innerHTML = R.stats
     .map(
-      (s) => `<div class="reveal"><dt>${esc(s.label)}</dt><dd data-count="${s.value}" data-decimals="${s.decimals || 0}" data-plain="${s.plain ? 1 : 0}" data-suffix="${esc(s.suffix || "")}">${s.plain ? s.value : (0).toFixed(s.decimals || 0)}${esc(s.suffix || "")}</dd></div>`
+      (s) => `<div class="reveal"><dt>${esc(s.label)}</dt><dd data-count="${s.value}" data-decimals="${s.decimals || 0}" data-plain="${s.plain ? 1 : 0}" data-suffix="${esc(s.suffix || "")}">${(+s.value).toFixed(s.decimals || 0)}${esc(s.suffix || "")}</dd></div>`
     )
     .join("");
   $("#langs").innerHTML = (R.languages || []).map((l) => `<li><b>${esc(l.name)}</b>${esc(l.level)}</li>`).join("");
@@ -220,11 +271,16 @@
   /* ---------------------------------------------------------------------
      Experience & Education — two separate timelines
      --------------------------------------------------------------------- */
+  // "Project — details" → bold project name, then details
+  const point = (p) => {
+    const i = p.indexOf(" — ");
+    return i > 0 && i < 60 ? `<li><b>${esc(p.slice(0, i))}</b> — ${esc(p.slice(i + 3))}</li>` : `<li>${esc(p)}</li>`;
+  };
   const timeline = (items) =>
     (items || [])
       .map(
         (t, i) => `<li class="tl reveal" style="--d:${i * 0.06}s">
-        <div class="tl__period mono">${esc(t.period)}</div>
+        <div class="tl__period mono">${esc(t.period)}${duration(t.period) ? `<span class="tl__dur">${duration(t.period)}</span>` : ""}</div>
         <div class="tl__body">
           <div class="tl__head">
             ${logo(t.logo, t.org, "tl__logo")}
@@ -233,7 +289,8 @@
               <div class="tl__org">${esc(t.org)}${t.place ? ` · <span class="muted">${esc(t.place)}</span>` : ""}</div>
             </div>
           </div>
-          ${t.points && t.points.length ? `<ul class="tl__points">${t.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}
+          ${t.points && t.points.length ? `<ul class="tl__points">${t.points.map(point).join("")}</ul>` : ""}
+          ${t.stack && t.stack.length ? `<ul class="tags tl__stack" aria-label="Tools">${t.stack.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
         </div>
       </li>`
       )
@@ -244,12 +301,14 @@
   /* ---------------------------------------------------------------------
      Certificates
      --------------------------------------------------------------------- */
+  const CERTS_SHOWN = 6;
+  const certCount = (R.certificates || []).length;
   $("#certs").innerHTML = (R.certificates || [])
     .map((c, i) => {
       const tag = c.url ? "a" : "div";
       const attrs = c.url ? ` href="${esc(c.url)}" target="_blank" rel="noopener"` : "";
       const done = c.status === "done";
-      return `<${tag} class="cert reveal" style="--d:${i * 0.06}s"${attrs}>
+      return `<${tag} class="cert reveal${i >= CERTS_SHOWN ? " cert--extra" : ""}" style="--d:${(i % CERTS_SHOWN) * 0.06}s"${attrs}>
         ${logo(c.logo, c.issuer, "cert__badge")}
         <span class="cert__title">${esc(c.title)}</span>
         <span class="cert__issuer">${esc(c.issuer)}</span>
@@ -258,6 +317,21 @@
       </${tag}>`;
     })
     .join("");
+
+  const certsEl = $("#certs"), moreBtn = $("#certsMore");
+  if (certCount > CERTS_SHOWN) {
+    certsEl.classList.add("is-collapsed");
+    moreBtn.hidden = false;
+    const label = () =>
+      (moreBtn.textContent = certsEl.classList.contains("is-collapsed") ? `Show all ${certCount} certificates` : "Show fewer");
+    label();
+    moreBtn.addEventListener("click", () => {
+      const opening = certsEl.classList.toggle("is-collapsed") === false;
+      label();
+      if (opening) $$(".cert--extra", certsEl).forEach((el) => el.classList.add("is-visible"));
+      else $("#certificates").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    });
+  }
 
   /* ---------------------------------------------------------------------
      Contact
@@ -268,6 +342,8 @@
   };
   const contacts = [
     R.links.email && { label: "Email", sub: R.links.email, href: "mailto:" + R.links.email, icon: "" },
+    R.links.phone && { label: "Phone", sub: R.links.phone, href: "tel:" + R.links.phone.replace(/[^+\d]/g, ""), icon: "" },
+    R.links.telegram && { label: "Telegram", sub: "@" + R.links.telegram.replace(/^@/, ""), href: "https://t.me/" + R.links.telegram.replace(/^@/, ""), icon: "" },
     R.links.linkedin && { label: "LinkedIn", sub: "in/mekhty-mekhtyev", href: R.links.linkedin, icon: iconOf("linkedin") },
     R.links.github && { label: "GitHub", sub: "@Mekhty111", href: R.links.github, icon: iconOf("github") },
   ].filter(Boolean);
@@ -352,10 +428,8 @@
     try { localStorage.setItem("theme", next); } catch (e) {}
     readColors();
   });
-  $("#printBtn").addEventListener("click", () => {
-    $$(".reveal").forEach((el) => el.classList.add("is-visible"));
-    window.print();
-  });
+  // Ctrl+P / "Save as PDF" — make sure nothing is still hidden by scroll reveals
+  addEventListener("beforeprint", () => $$(".reveal").forEach((el) => el.classList.add("is-visible")));
 
   /* ---------------------------------------------------------------------
      Hero canvas — live clustering: three centroids, one follows the cursor;

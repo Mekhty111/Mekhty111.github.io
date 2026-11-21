@@ -200,6 +200,9 @@ body::before {
 .btn--ghost { background: color-mix(in srgb, var(--surface) 60%, transparent); backdrop-filter: blur(6px); }
 .btn--ghost:hover { border-color: var(--text); }
 .btn__icon { flex: none; margin-right: 2px; }
+.btn--sm { padding: 8px 14px; font-size: 0.85rem; gap: 6px; }
+.btn--sm .btn__icon { width: 16px; height: 16px; }
+.btn__note { font-family: var(--f-mono); font-size: 0.68rem; padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--accent-ink) 12%, transparent); }
 .contact__label { display: inline-flex; align-items: center; gap: 14px; }
 .contact__icon { flex: none; width: 22px; height: 22px; opacity: 0.85; }
 
@@ -210,7 +213,7 @@ body::before {
   position: relative;
   min-height: 100svh;
   display: flex; align-items: flex-end;
-  padding: 120px 0 72px;
+  padding: 110px 0 48px;
   overflow: hidden;
   isolation: isolate;
 }
@@ -243,7 +246,7 @@ body::before {
 
 .hero__name {
   margin-top: 28px;
-  font-size: clamp(3.4rem, 13vw, 11.5rem);
+  font-size: clamp(3.4rem, min(12vw, 17vh), 10rem);
   line-height: 0.86;
   letter-spacing: -0.055em;
   font-weight: 600;
@@ -269,8 +272,23 @@ body::before {
   text-wrap: balance;
 }
 .hero__cta { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 10px; }
-.hero__hint { margin-top: 40px; color: var(--muted); }
-@media (hover: none) { .hero__hint { display: none; } }
+
+/* At a glance — the 10-second summary */
+.glance {
+  margin: 40px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+.glance > div { padding: 16px 20px; border-left: 1px solid var(--line); margin-left: -1px; border-top: 1px solid var(--line); margin-top: -1px; }
+.glance dt { font-family: var(--f-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.glance dd { margin: 6px 0 0; font-size: 0.95rem; line-height: 1.35; color: var(--text); }
+.hero__print-contacts { display: none; }
 
 /* ==========================================================================
    Sections
@@ -488,6 +506,9 @@ body::before {
 .tl:first-child { padding-top: 0; }
 .tl__period { color: var(--muted); padding-top: 12px; }
 .tl__head { display: flex; align-items: center; gap: 16px; }
+.tl__dur { display: block; margin-top: 6px; color: var(--text-2); }
+.tl__points b { color: var(--text); font-weight: 500; }
+.tl__stack { margin-top: 14px; }
 .tl__title { font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.2; }
 .tl__org { color: var(--accent-text); margin-top: 4px; font-size: 0.98rem; }
 .tl__points { margin: 12px 0 0; padding: 0; list-style: none; color: var(--text-2); }
@@ -500,6 +521,8 @@ body::before {
    Certificates
    ========================================================================== */
 .certs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.certs.is-collapsed .cert--extra { display: none; }
+.certs__more { margin-top: 20px; }
 .cert {
   position: relative;
   padding: 22px;
@@ -569,25 +592,74 @@ a.cert:hover .cert__verify { opacity: 1; }
    Print — "Save as PDF" produces a clean one-column resume
    ========================================================================== */
 @media print {
-  :root { --bg: #fff; --surface: #fff; --surface-2: #f3f3f3; --text: #111; --text-2: #333; --muted: #666; --line: #ddd; --line-strong: #bbb; --accent-text: #111; --accent: #e8ff9a; --accent-ink: #111; }
-  body { font-size: 11pt; background: #fff; }
-  body::before, .progress, .nav, .hero__canvas, .hero__cta, .hero__hint, .section__note, .tabs, .card__arrow, .card__visual, .card--more, .contact__title, .about__photo { display: none !important; }
-  .hero { min-height: 0; padding: 0 0 12pt; }
-  .hero::after { display: none; }
-  .hero__name { font-size: 34pt; margin-top: 8pt; }
-  .hero__last { padding-left: 0; }
+  @page { size: A4; margin: 14mm 14mm 16mm; }
+  :root { --bg: #fff; --surface: #fff; --surface-2: #f1f1f1; --text: #111; --text-2: #333; --muted: #666; --line: #ddd; --line-strong: #bbb; --accent-text: #111; --accent: #e8ff9a; --accent-ink: #111; color-scheme: light; }
+  html { font-size: 9.5pt; }
+  body { background: #fff; }
+  body::before, .progress, .nav, .hero__canvas, .hero__cta, .section__note, .tabs, .card__arrow, .card__visual, .card--more,
+  .contact__title, .about__photo, .stats, .certs__more, .footer, .eyebrow, .card .tags { display: none !important; }
+  .wrap { width: 100%; }
   .reveal { opacity: 1 !important; transform: none !important; }
-  .section { padding-top: 18pt; break-inside: avoid-page; }
-  .section__head { margin-bottom: 10pt; padding-bottom: 6pt; }
-  .section__head h2 { font-size: 16pt; }
-  .about { grid-template-columns: 1fr; }
-  .card { min-height: 0; break-inside: avoid; padding: 10pt; }
-  .projects { gap: 8pt; }
-  .skill { padding: 4pt 8pt; animation: none; }
-  .contact { padding: 18pt 0; }
-  .contact__link { padding: 6pt 0; font-size: 11pt; }
-  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #666; }
+
+  /* header */
+  .hero { min-height: 0; padding: 0 0 8pt; display: block; }
+  .hero::after { display: none; }
+  .hero__name { font-size: 26pt; margin-top: 0; line-height: 1; letter-spacing: -0.03em; }
+  .hero__name span { display: inline; }
+  .hero__last { padding-left: 0; }
+  .hero__last em { font-size: 1em; color: #111; }
+  .hero__role { margin-top: 4pt; font-size: 9pt; letter-spacing: 0.08em; }
+  .hero__lead { max-width: none; font-size: 11pt; margin-top: 6pt; }
+  .hero__print-contacts { display: block; margin-top: 6pt; font-family: var(--f-mono); font-size: 8.5pt; color: #333; }
+  .glance { margin-top: 10pt; backdrop-filter: none; border-radius: 6pt; grid-template-columns: repeat(5, 1fr); }
+  .glance > div { padding: 6pt 8pt; }
+  .glance dd { font-size: 8.5pt; margin-top: 2pt; }
+
+  /* sections */
+  .section { padding-top: 11pt; }
+  .section__head { margin-bottom: 8pt; padding-bottom: 4pt; break-after: avoid; }
+  .section__head h2 { font-size: 14pt; }
+  .section__index { display: none; }
+  .about { display: block; }
+  .prose p { margin: 0 0 4pt; font-size: 9.5pt; line-height: 1.45; }
+  .langs { margin-top: 6pt; }
+
+  .skills { gap: 3pt; min-height: 0; }
+  .skill { padding: 1pt 6pt; gap: 4pt; animation: none !important; opacity: 1 !important; transform: none !important; font-size: 8pt; }
+  .skill__used { display: none; }
+
+  .projects { gap: 8pt; grid-template-columns: 1fr 1fr; }
+  .card { min-height: 0; break-inside: avoid; padding: 8pt 10pt; transform: none !important; }
+  .card__title { font-size: 12pt; margin-top: 2pt; }
+  .card__desc { font-size: 9pt; margin-top: 4pt; }
+  .metrics { margin-top: 6pt; }
+
+  .tl { padding: 6pt 0; gap: 10pt; grid-template-columns: 100pt minmax(0, 1fr); break-inside: avoid; }
+  .tl__period { padding-top: 2pt; font-size: 8pt; }
+  .tl__title { font-size: 12pt; }
+  .tl__points { margin-top: 4pt; font-size: 9pt; line-height: 1.4; }
+  .tl__points li { margin-top: 2pt; }
+  .tl__stack { margin-top: 5pt; }
+  .tags li { font-size: 7.5pt; padding: 1pt 5pt; }
+  .logo img, .logo__initials { width: 28pt !important; height: 28pt !important; border-radius: 6pt; box-shadow: none; }
+  .tl__head { gap: 8pt; }
+
+  .certs { grid-template-columns: 1fr 1fr; gap: 0 14pt; }
+  .certs.is-collapsed .cert--extra { display: flex; }
+  .cert { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2pt 8pt; padding: 2.5pt 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; break-inside: avoid; }
+  .cert__badge { margin: 0; }
+  .cert__badge img, .cert__badge .logo__initials { width: 18pt !important; height: 18pt !important; border-radius: 4pt; }
+  .logo--pair img + img { margin-left: -6pt; outline-width: 2px; }
+  .cert__title { font-size: 9pt; flex: 1; }
+  .cert__issuer { display: none; }
+  .cert__meta { padding: 0; margin: 0; font-size: 7.5pt; }
+  .cert__meta .status--done, .cert__verify, .progressbar { display: none; }
+  .cert__meta .status { padding: 0 5pt; font-size: 7pt; }
+
+  .contact { display: none !important; }
+  .contact .eyebrow { display: block; border: 0; padding: 0; background: none; }
+  .contact__links { margin-top: 4pt; }
+  .contact__link { padding: 4pt 0; font-size: 10pt; }
+  a[href^="http"]::after { content: none; }
   .contact__link::after, .card::after { content: none !important; }
-  .logo img, .logo__initials { box-shadow: none; }
-  .tl, .cert { break-inside: avoid; }
 }

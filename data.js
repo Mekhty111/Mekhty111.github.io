@@ -11,6 +11,21 @@ window.RESUME = {
   avatar: "https://avatars.githubusercontent.com/u/98921340?v=4",
   available: "Data Scientist at Yelo Bank",
 
+  /* PDF resume linked from the "Download CV" buttons (regenerate it after edits — see README). */
+  cv: "cv.pdf",
+  site: "https://mekhty111.github.io",
+
+  /* "At a glance" strip under the hero — the 10-second summary for recruiters.
+     Use {experienceSince} to insert the auto-computed length of experience. */
+  experienceSince: "Jul 2025",
+  glance: [
+    { label: "Now", value: "Data Scientist · Yelo Bank" },
+    { label: "Experience", value: "{experienceSince} in banking ML" },
+    { label: "Focus", value: "Credit risk · production ML · LLM / RAG" },
+    { label: "Core stack", value: "Python · SQL · LightGBM · FastAPI · Docker" },
+    { label: "Languages", value: "RU · AZ · EN" },
+  ],
+
   headline:
     "I build production ML for lending — and make it fast, monitored and reliable enough to run every day.",
 
@@ -126,8 +141,10 @@ window.RESUME = {
      Without a logo the organisation's initials are shown instead. */
 
   /* Work experience. Add entries like:
-     { period: "2025 — Now", title: "Data Scientist", org: "Company", logo: "company.png", place: "Baku",
-       points: ["What you did", "Impact with a number"] } */
+     { period: "Jan 2025 — Now", title: "Data Scientist", org: "Company", logo: "company.png", place: "Baku",
+       points: ["Project — what you did, impact with a number"], stack: ["Python"] }
+     Periods are "Mon YYYY — Mon YYYY" (or "— Now"); the duration is computed automatically.
+     Text before " — " in a point is shown in bold. */
   experience: [
     {
       period: "Feb 2026 — Now",
@@ -136,6 +153,7 @@ window.RESUME = {
       logo: "yelo.png",
       place: "Baku",
       points: ["Full-time role after the internship, continuing work on the bank's production ML systems."],
+      stack: ["Python", "SQL", "FastAPI", "Docker", "GitLab", "Grafana"],
     },
     {
       period: "Jul 2025 — Feb 2026",
@@ -148,6 +166,7 @@ window.RESUME = {
         "Micro-scoring Pre-Offer — engine that finds micro-business clients with unused limits, runs Risk Rules / Stop Factors / Business Rules chains and auto-creates loan leads (refinancing or parallel top-up). Restored it end-to-end: fixed deprecated integrations, rewrote data access, vectorized and parallelized inference.",
         "Built a FastAPI interface with dynamic toggles for Risk Rules and lead creation. Both systems shipped containerized with Docker, versioned on GitLab and monitored in Grafana.",
       ],
+      stack: ["Python", "multiprocessing", "SQL", "FastAPI", "Docker", "GitLab", "Grafana"],
     },
     {
       period: "Sep 2025 — Dec 2025",
@@ -159,6 +178,7 @@ window.RESUME = {
         "Mentored five teams at the 48-hour National School Hackathon (Ministry of Science and Education × Algorithmics Global) — 300 finalists selected from 350,000+ participants.",
         "Three of my teams reached the Top 16; one took 3rd place overall.",
       ],
+      stack: ["Mentoring", "Hackathon"],
     },
   ],
 
