@@ -133,6 +133,7 @@ window.RESUME = {
         { label: "PSI", value: "0.0001" },
       ],
       url: "https://github.com/Mekhty111/Home-Credit-Default-Risk",
+      demo: "https://credit.mehdiyev.dev/ui",
       year: "2026",
     },
   ],

@@ -207,9 +207,17 @@
   $("#projectGrid").innerHTML =
     R.projects
       .map(
-        (p, i) => `
-      <a class="card reveal" style="--d:${i * 0.08}s;--card-color:${cardColors[i % cardColors.length]}" data-id="${esc(p.id)}"
-         href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="${esc(p.title)} — open on GitHub">
+        (p, i) => {
+          // Links can't nest, so a card with a demo is an <article> whose GitHub
+          // link is stretched over the whole card, with the demo button above it.
+          const ghLabel = `${esc(p.title)} — open on GitHub`;
+          const open = p.demo
+            ? `<article class="card reveal" style="--d:${i * 0.08}s;--card-color:${cardColors[i % cardColors.length]}" data-id="${esc(p.id)}">
+        <a class="card__cover" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="${ghLabel}"></a>`
+            : `<a class="card reveal" style="--d:${i * 0.08}s;--card-color:${cardColors[i % cardColors.length]}" data-id="${esc(p.id)}"
+         href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="${ghLabel}">`;
+          return `
+      ${open}
         <div class="card__top">
           <span class="card__kicker mono">${esc(p.year)} · ${esc(p.kicker)}</span>
           <span class="card__arrow" aria-hidden="true">${arrow}</span>
@@ -223,7 +231,13 @@
             : ""
         }
         <ul class="tags">${p.tags.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-      </a>`
+        ${
+          p.demo
+            ? `<a class="card__demo mono" href="${esc(p.demo)}" target="_blank" rel="noopener"><span class="card__live" aria-hidden="true"></span>Live demo<span class="card__demo-host">${esc(new URL(p.demo).host)}</span></a>`
+            : ""
+        }
+      ${p.demo ? "</article>" : "</a>"}`;
+        }
       )
       .join("") +
     `<a class="card card--more reveal" href="${esc(R.links.github)}?tab=repositories" target="_blank" rel="noopener">
