@@ -13,7 +13,7 @@ window.RESUME = {
 
   /* PDF resume linked from the "Download CV" buttons (regenerate it after edits — see README). */
   cv: "cv.pdf",
-  site: "https://mekhty111.github.io",
+  site: "https://mehdiyev.dev",
 
   /* "At a glance" strip under the hero — the 10-second summary for recruiters.
      Use {experienceSince} to insert the auto-computed length of experience. */
