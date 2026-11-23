@@ -1,0 +1,6 @@
+[
+  { "url": "https://credit.mehdiyev.dev/ui/score", "out": "credence-score.webp", "format": "webp", "quality": 84, "width": 1440, "height": 900, "wait": 3500,
+    "steps": ["document.querySelector('[data-preset=prime]').click()", "document.querySelector('#score-btn').click()"], "stepWait": 6500 },
+  { "url": "https://credit.mehdiyev.dev/ui", "out": "credence-overview.webp", "format": "webp", "quality": 84, "width": 1440, "height": 900, "wait": 4500 },
+  { "url": "https://credit.mehdiyev.dev/ui/model", "out": "credence-model.webp", "format": "webp", "quality": 84, "width": 1440, "height": 900, "wait": 4500 }
+]

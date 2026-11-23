@@ -1,42 +1,88 @@
-# Mehdi Mehdiyev — resume site
+# mehdiyev.dev
 
-Static resume / portfolio (HTML · CSS · vanilla JS), built for GitHub Pages. No build step.
+Personal portfolio of Mehdi Mehdiyev, Data Scientist. A static site for GitHub Pages: content in TypeScript, rendered to plain HTML by a zero-dependency Node script. No framework, no `node_modules`.
+
+```
+src/data/portfolio.ts   ← all content (edit this)
+src/data/types.ts       ← field documentation and types
+src/render.ts           ← turns the data into HTML (sections, case studies, print CV)
+scripts/build.ts        ← writes index.html + sitemap.xml (+ cv.pdf with --cv)
+scripts/shoot.mjs       ← refreshes demo screenshots from the live apps
+assets/css/site.css     ← design system, components, print stylesheet for cv.pdf
+assets/js/site.js       ← nav, mobile menu, <project-demo> live demo component
+index.html, sitemap.xml ← generated; do not edit by hand
+```
+
+Requires **Node 22.18+** (runs TypeScript natively) and, for `cv.pdf` and screenshots, Edge or Chrome.
 
 ## Edit content
 
-All content lives in **`data.js`** — name, about, stats, skills, projects, experience, education, certificates, languages.
+1. Edit `src/data/portfolio.ts`. Your editor type-checks it against `src/data/types.ts`.
+2. Run `npm run build` (or `npm run build:cv` to also re-print `cv.pdf`).
+3. Commit `index.html`, `sitemap.xml` and, if rebuilt, `cv.pdf`.
 
-- **Front page story:** `paper.lead` — kicker, headline, deck, body paragraphs and a pull quote. `paper.title` / `paper.motto` set the masthead. Wrap a phrase in `==…==` to print it with a highlighter.
-- **Project chapters:** each project can have `headline`, `deck`, `body` (paragraphs) and `image` (a screenshot in `assets/shots/`). The picture links to `demo` if set, otherwise to the repo.
-- **At a glance:** the `glance` strip under the hero is the 10-second summary. `{experienceSince}` turns into the length of experience counted from `experienceSince`.
-- **Contacts:** set `links.email`, `links.phone` or `links.telegram` to show them in the contact section and in the PDF header.
-- **New project card:** add an object to `projects` (`id`, `title`, `kicker`, `description`, `tags`, `metrics`, `url`, `year`). Cards link to `url`.
-- **Link a skill to a project:** add the project `id` to the skill's `projects` array — hovering the skill highlights the card.
-- **Work experience / education:** add entries to `experience` or `education` — each has its own section. Use periods like `"Jul 2025 — Feb 2026"` or `"Feb 2026 — Now"`; the duration (`8 mos`) is computed automatically. Text before ` — ` in a point is shown in bold, and `stack` lists the tools used in that role.
-- **Certificates:** add to `certificates`, `status: "done"` + `url` to make the card a link. The first 6 show by default, the rest behind “Show all”.
-- **Logos:** put the image in `assets/logos/` and set `logo: "file.png"` on an experience, education or certificate entry (an array for co-issued certificates). Without a logo the initials are shown.
+The build stops with a message if a referenced file (poster, logo, CV, OG image) is missing.
 
-## PDF resume (`cv.pdf`)
+**Placeholders to fill**
+- `contact.email` is empty, so no email link is shown anywhere. Set it to publish one.
+- Tax RAG's `repo` is commented out because `github.com/Mekhty111/Tax_RAG` returns 404. Make the repo public, then uncomment it.
+- `about` and `person.intro` were drafted from your experience entries. Rewrite them in your own words.
 
-The “Download CV” buttons link to `cv.pdf`, a 2-page A4 resume printed from the same page with the print stylesheet. **After editing `data.js`, rebuild it:**
+## Add a project
 
-```bash
-powershell -ExecutionPolicy Bypass -File scripts/build-cv.ps1
+Add an object to `projects`:
+
+- `layout: "feature"` gets the full case study: live demo window, problem / approach / results, architecture pipeline, an expandable details panel and the stack.
+- `layout: "secondary"` gets a compact two-column entry with a smaller pipeline.
+- Small repos go in `archive` (one line each).
+
+Fields: `summary`, `problem`, `approach[]`, `architecture[]` (ordered steps), `features[]`, `metrics[]` with `metricColumns`, `table` (e.g. a decision policy), `stack[]`, `repo`, `demo`. Only real numbers belong in `metrics`.
+
+## Configure a live demo
+
+```ts
+demo: {
+  kind: "fastapi",             // "fastapi" | "streamlit" | "gradio" | "custom" | "external"
+  url: "https://credit.mehdiyev.dev",
+  embed: true,                 // only after checking the host allows framing (see below)
+  docs: "https://credit.mehdiyev.dev/docs",
+  timeout: 25,                 // seconds before the error state with retry + new-tab link
+  views: [
+    { label: "Score an applicant", path: "/ui/score", poster: "assets/shots/credence-score.webp", posterAlt: "…" },
+  ],
+}
 ```
 
-(It uses headless Edge or Chrome. Ctrl+P → “Save as PDF” in the browser gives the same result.)
+- **Streamlit**: `?embed=true` is added automatically.
+- **Gradio / Hugging Face Spaces**: use the direct `https://<user>-<space>.hf.space` URL, not the huggingface.co page.
+- **external**: never embedded; the window shows the poster and links out.
+
+**Check that embedding is allowed** before setting `embed: true`:
+
+```bash
+curl -sI https://your-demo.example | grep -iE "x-frame-options|content-security-policy"
+```
+
+If the host sends `X-Frame-Options: DENY/SAMEORIGIN` or a CSP `frame-ancestors` that excludes mehdiyev.dev, set `embed: false`. The component never tries to work around these headers. With no JavaScript, every demo button is a normal link that opens the app in a new tab.
+
+**Posters** are real screenshots of each view. To refresh them after the app changes, edit `scripts/shots.json` and run `npm run shots`.
+
+## CV (PDF)
+
+`cv.pdf` is the same content printed with the print stylesheet (plain, ATS-friendly, 2 pages A4). Run `npm run build:cv` after editing content. To use a hand-made PDF instead, put it in the repo root and point `site.cv` at it.
 
 ## Run locally
 
 ```bash
-python -m http.server 5517
+npm run dev
 ```
 
-Open http://localhost:5517.
+This builds the page and serves it at http://localhost:5517. Any static server works (`python -m http.server 5517`).
 
-## Deploy to GitHub Pages
+## Deploy
 
-1. Create a public repo named **`Mekhty111.github.io`**.
-2. Push the contents of this folder to its `main` branch.
-3. Repo → Settings → Pages → Source: *Deploy from a branch*, branch `main`, folder `/ (root)`.
-4. The site goes live at https://mekhty111.github.io.
+GitHub Pages serves the repository root of `main` (Settings → Pages → Deploy from a branch → `main` / root). The custom domain is set by `CNAME`. Build locally, commit the generated files, push. There is no CI build step, so a content edit is not live until `npm run build` has been run and its output committed.
+
+## Fonts and licences
+
+Archivo and Geist are self-hosted in `assets/fonts/` under the SIL Open Font License. Icons are inline SVG paths from Lucide (ISC).

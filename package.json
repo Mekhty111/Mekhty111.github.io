@@ -1,0 +1,15 @@
+{
+  "name": "mehdiyev-dev",
+  "private": true,
+  "type": "module",
+  "description": "Personal portfolio of Mehdi Mehdiyev. Static site for GitHub Pages; no runtime dependencies.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "build:cv": "node scripts/build.ts --cv",
+    "dev": "node scripts/build.ts && python -m http.server 5517",
+    "shots": "node scripts/shoot.mjs"
+  }
+}
