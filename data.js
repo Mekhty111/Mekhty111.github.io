@@ -4,171 +4,79 @@
    ========================================================================== */
 window.RESUME = {
   name: "Mehdi Mehdiyev",
-  firstName: "Mehdi",
-  lastName: "Mehdiyev",
-  role: "Data Scientist @ Yelo Bank",
+  role: "Data Scientist",
+  company: "Yelo Bank",
   location: "Baku, Azerbaijan",
   avatar: "https://avatars.githubusercontent.com/u/98921340?v=4",
-  available: "Data Scientist at Yelo Bank",
 
   /* PDF resume linked from the "Download CV" buttons (regenerate it after edits — see README). */
   cv: "cv.pdf",
   site: "https://mehdiyev.dev",
 
-  /* "At a glance" strip under the hero — the 10-second summary for recruiters.
-     Use {experienceSince} to insert the auto-computed length of experience. */
+  /* One sentence under the name. */
+  headline: "I build production ML for lending — credit scoring, PD models and the pipelines that run them.",
+
+  /* Three facts a recruiter should see first. {experienceSince} = auto-computed time in industry. */
   experienceSince: "Jul 2025",
-  glance: [
-    { label: "Now", value: "Data Scientist · Yelo Bank" },
-    { label: "Experience", value: "{experienceSince} in banking ML" },
-    { label: "Focus", value: "Credit risk · production ML · LLM / RAG" },
-    { label: "Core stack", value: "Python · SQL · LightGBM · FastAPI · Docker" },
-    { label: "Languages", value: "RU · AZ · EN" },
+  facts: [
+    { value: "{experienceSince}", label: "in banking ML at Yelo Bank" },
+    { value: "19×", label: "faster credit-offer pipeline (14.5 h → 45 min)" },
+    { value: "0.762", label: "out-of-time AUC, credit scorecard" },
   ],
-
-  headline:
-    "I build production ML for lending — and make it fast, monitored and reliable enough to run every day.",
-
-  about: [
-    "Data Scientist at Yelo Bank in Baku. I work on ==production ML systems the bank uses daily== — personalized credit offers and micro-business pre-offer scoring — from the data access layer to the API and monitoring.",
-    "My strongest ground is tabular ML for finance — credit scoring, probability-of-default models, interpretable WoE scorecards next to gradient boosting benchmarks. I'm now extending into LLM systems and retrieval-augmented generation.",
-  ],
-
-  /* ------------------------------------------------------------------
-     NEWSPAPER — the front page story. Plain facts, written as news.
-     ------------------------------------------------------------------ */
-  paper: {
-    title: "The Daily Model",
-    motto: "Credit risk, production ML & retrieval — reported from Baku",
-    lead: {
-      kicker: "Banking",
-      headline: "Bank's 14-hour credit job now finishes in 45 minutes",
-      deck: "At Yelo Bank, data scientist Mehdi Mehdiyev rebuilt the pipeline behind personalized credit offers — and brought a dormant micro-business scoring engine back into production.",
-      byline: "Staff report · Baku",
-      body: [
-        "BAKU — When Mehdi Mehdiyev joined Yelo Bank as an intern data scientist in July 2025, the bank's Retail Personalized Offer model needed 14.5 hours to work through 5,000 clients. The model computes a maximum personalized credit offer for each client from salary, credit history and personal data, then predicts whether the client can actually carry it.",
-        "Mehdiyev rewrote the database connection layer from scratch, moved processing from linear to parallel with Python multiprocessing, added decorator-based logging to every function and made results persist to the database automatically. The same 5,000 clients now take 45 minutes — a 17–20× speed-up.",
-        "His second assignment was Micro-scoring Pre-Offer, an engine that finds micro-business clients with active loans and unused limits, runs them through risk rules, stop factors and business rules, and creates loan leads with two offers: refinancing or a parallel top-up. The engine had been dormant. He fixed its deprecated integrations, rewrote the data access layer, vectorized and parallelized inference, and put a FastAPI interface with live toggles in front of it.",
-        "Both systems shipped containerized with Docker, versioned on GitLab and monitored in Grafana. In February 2026 Mehdiyev moved into a full-time Data Scientist role at the bank.",
-      ],
-      quote: "Before my changes, 5,000 clients took 14.5 hours. After — 45 minutes.",
-      quoteBy: "Mehdi Mehdiyev, on the offer pipeline",
-    },
-  },
 
   links: {
     github: "https://github.com/Mekhty111",
     linkedin: "https://www.linkedin.com/in/mekhty-mekhtyev/",
-    // email: "you@example.com",   // uncomment to show an email button
+    // email: "you@example.com",   // uncomment to show it in the header and the PDF
+    // phone: "+994 ...",
+    // telegram: "username",
   },
 
-  stats: [
-    { value: 19, decimals: 0, suffix: "×", label: "Faster credit-offer pipeline: 14.5 h → 45 min for 5,000 clients" },
-    { value: 0.762, decimals: 3, label: "Out-of-time AUC on a credit PD scorecard" },
-    { value: 10, decimals: 0, suffix: "+", label: "ML, AI and SQL certificates" },
-  ],
-
-  /* Each skill can list project ids it was used in (see `projects` below).
-     Hovering a skill highlights those project cards. */
-  skills: [
-    {
-      group: "Machine Learning",
-      items: [
-        { name: "scikit-learn", projects: ["home-credit"] },
-        { name: "LightGBM", projects: ["home-credit"] },
-        { name: "XGBoost" },
-        { name: "CatBoost" },
-        { name: "Logistic Regression / Scorecards", projects: ["home-credit"] },
-        { name: "Optuna" },
-        { name: "SHAP", projects: ["home-credit"] },
-        { name: "Clustering · K-means · DBSCAN" },
-        { name: "Anomaly detection" },
-      ],
-    },
-    {
-      group: "Deep Learning & NLP",
-      items: [
-        { name: "PyTorch" },
-        { name: "TensorFlow" },
-        { name: "Keras" },
-        { name: "LLMs", projects: ["tax-rag"] },
-        { name: "RAG", projects: ["tax-rag"] },
-        { name: "Embeddings / Vector search", projects: ["tax-rag"] },
-        { name: "Topic modeling (LDA)" },
-      ],
-    },
-    {
-      group: "Data",
-      items: [
-        { name: "Python", projects: ["home-credit", "tax-rag"] },
-        { name: "Pandas", projects: ["home-credit"] },
-        { name: "NumPy", projects: ["home-credit"] },
-        { name: "SQL / PostgreSQL" },
-        { name: "Feature engineering", projects: ["home-credit"] },
-        { name: "WoE / IV", projects: ["home-credit"] },
-        { name: "PCA · t-SNE · UMAP" },
-        { name: "Matplotlib · Plotly", projects: ["home-credit"] },
-      ],
-    },
-    {
-      group: "Engineering",
-      items: [
-        { name: "FastAPI", projects: ["home-credit"] },
-        { name: "Flask" },
-        { name: "Docker" },
-        { name: "Grafana" },
-        { name: "Prometheus" },
-        { name: "CI/CD · GitLab" },
-        { name: "Python multiprocessing" },
-        { name: "Jinja2", projects: ["home-credit"] },
-        { name: "Git" },
-        { name: "Dataiku" },
-        { name: "Jupyter", projects: ["home-credit"] },
-      ],
-    },
-  ],
-
-  /* Add a project = add an object here. `url` is where the card links. */
+  /* Projects — the main section. The picture links to `demo` if set, otherwise to `url`.
+     `image`: screenshot in assets/shots/. `highlights`: 2–4 short lines, results first. */
   projects: [
-    {
-      id: "tax-rag",
-      title: "Tax_RAG",
-      kicker: "LLM · Retrieval-Augmented Generation",
-      headline: "Asking the tax code a question — and getting the source back",
-      deck: "A retrieval-augmented assistant that answers from the documents themselves instead of from memory.",
-      description:
-        "Question answering over tax documentation: documents are chunked and embedded, the most relevant passages are retrieved for each question, and an LLM answers grounded in those sources.",
-      tags: ["Python", "LLM", "RAG", "Embeddings", "Vector search"],
-      metrics: [],
-      url: "https://github.com/Mekhty111/Tax_RAG",
-      year: "2026",
-    },
     {
       id: "home-credit",
       title: "Home Credit Default Risk",
-      kicker: "Credit risk · PD model",
-      headline: "A credit scorecard that holds up on data it has never seen",
-      deck: "Trained on 307,000 Home Credit applications, the interpretable scorecard keeps an AUC of 0.762 out of time — and now scores live applications in about ten milliseconds.",
-      body: [
-        "The project follows retail-banking methodology end to end: exploratory analysis across seven related tables, WoE/IV feature selection, a logistic-regression scorecard with a LightGBM benchmark, and validation on an out-of-time sample of 61,503 applications.",
-        "LightGBM edged ahead on raw accuracy (0.772 AUC out of time), but the scorecard — at 0.762, with a Gini of 0.524, KS of 0.399 and a population stability index of 0.0001 — was chosen for being fully interpretable, the property regulators ask for.",
-        "The result runs as Credence, a FastAPI service with a web interface: every decision comes back with a probability of default, a risk band and the factors behind it.",
+      summary: "Probability-of-default model and live credit scoring service, built the way a retail bank would.",
+      highlights: [
+        "WoE/IV scorecard with a LightGBM benchmark, trained on 307k applications from 7 tables",
+        "Validated out of time on 61,503 applications — stable, PSI 0.0001",
+        "Deployed as a FastAPI service with a web UI: decision, PD, risk band and reasons in ~10 ms",
       ],
-      image: "assets/shots/home-credit.png",
-      imageAlt: "Screenshot of the Credence risk engine demo",
-      description:
-        "End-to-end probability-of-default pipeline on 7 Kaggle tables: EDA → WoE/IV feature selection → logistic-regression scorecard with a LightGBM benchmark → out-of-time validation, served through FastAPI with a Jinja2 UI.",
-      tags: ["LightGBM", "Logistic Regression", "WoE / IV", "SHAP", "FastAPI"],
       metrics: [
         { label: "AUC OOT", value: "0.762" },
         { label: "Gini", value: "0.524" },
         { label: "KS", value: "0.399" },
         { label: "PSI", value: "0.0001" },
       ],
+      tags: ["Python", "LightGBM", "Logistic Regression", "WoE / IV", "SHAP", "FastAPI"],
+      image: "assets/shots/home-credit.png",
+      imageAlt: "Screenshot of the Credence credit scoring demo",
       url: "https://github.com/Mekhty111/Home-Credit-Default-Risk",
       demo: "https://credit.mehdiyev.dev/ui",
       year: "2026",
     },
+    {
+      id: "tax-rag",
+      title: "Tax RAG",
+      summary: "Question answering over tax documentation that cites the source it answers from.",
+      highlights: [
+        "Documents are chunked and embedded; the most relevant passages are retrieved per question",
+        "An LLM answers grounded in the retrieved passages instead of from memory",
+      ],
+      metrics: [],
+      tags: ["Python", "LLM", "RAG", "Embeddings", "Vector search"],
+      url: "https://github.com/Mekhty111/Tax_RAG",
+      year: "2026",
+    },
+  ],
+
+  skills: [
+    { group: "ML", items: ["scikit-learn", "LightGBM", "XGBoost", "CatBoost", "Logistic regression / scorecards", "SHAP", "Optuna", "Clustering", "Anomaly detection"] },
+    { group: "Deep learning & LLM", items: ["PyTorch", "TensorFlow", "Keras", "LLMs", "RAG", "Embeddings / vector search"] },
+    { group: "Data", items: ["Python", "SQL / PostgreSQL", "Pandas", "NumPy", "Feature engineering", "WoE / IV", "Matplotlib / Plotly"] },
+    { group: "Engineering", items: ["FastAPI", "Flask", "Docker", "GitLab CI/CD", "Grafana", "Prometheus", "Python multiprocessing", "Git"] },
   ],
 
   /* Logos: drop an image into assets/logos/ and put its file name in `logo`.

@@ -3,201 +3,79 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Daily Model — Mehdi Mehdiyev, Data Scientist</title>
-  <meta name="description" content="Mehdi Mehdiyev — Data Scientist at Yelo Bank, Baku. Production ML for lending, credit risk modelling, LLM / RAG systems. A resume set as a newspaper." />
-  <meta property="og:title" content="The Daily Model — Mehdi Mehdiyev, Data Scientist" />
-  <meta property="og:description" content="Bank's 14-hour credit job now finishes in 45 minutes. Production ML for lending, credit risk, LLM / RAG." />
+  <title>Mehdi Mehdiyev — Data Scientist</title>
+  <meta name="description" content="Mehdi Mehdiyev — Data Scientist at Yelo Bank, Baku. Credit scoring, PD models, production ML, LLM / RAG. Projects with live demos." />
+  <meta property="og:title" content="Mehdi Mehdiyev — Data Scientist" />
+  <meta property="og:description" content="Credit scoring, PD models and production ML. Projects with live demos." />
   <meta property="og:image" content="https://mehdiyev.dev/assets/shots/home-credit.png" />
-  <meta name="theme-color" content="#efe9dc" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23efe9dc'/%3E%3Ctext x='16' y='25' font-family='Georgia,serif' font-weight='700' font-size='24' text-anchor='middle' fill='%23161513'%3EM%3C/text%3E%3C/svg%3E" />
-
+  <meta name="theme-color" content="#f4f1ea" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f1ea'/%3E%3Ctext x='16' y='25' font-family='Georgia,serif' font-weight='700' font-size='24' text-anchor='middle' fill='%23161513'%3EM%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600&family=Libre+Franklin:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <script>
-    (function () {
-      try { var t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
-    })();
-  </script>
 </head>
 <body>
-  <a class="skip" href="#front">Skip to the front page</a>
-
-  <!-- sticky folio: appears once the masthead scrolls away -->
-  <header class="folio" id="folio" aria-label="Page header">
-    <a class="folio__name" href="#top" data-paper-title>The Daily Model</a>
-    <nav class="folio__nav" aria-label="Sections">
-      <a href="#front">Front page</a>
-      <a href="#technology">Technology</a>
-      <a href="#business">Business</a>
-      <a href="#record">Record</a>
-      <a href="#markets">Markets</a>
-      <a href="#classifieds">Classifieds</a>
+  <header class="bar">
+    <a class="bar__name" href="#top">Mehdi Mehdiyev</a>
+    <nav class="bar__nav" aria-label="Sections">
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
     </nav>
-    <div class="folio__tools">
-      <a class="btn-ink" data-cv href="cv.pdf" download>CV <span aria-hidden="true">↓</span></a>
-      <button type="button" class="btn-line" id="themeBtn"><span class="t-day">Night edition</span><span class="t-night">Day edition</span></button>
-    </div>
+    <a class="btn btn--solid btn--sm" data-cv href="cv.pdf" download>Download CV</a>
   </header>
 
-  <div class="paper" id="top">
-    <!-- ================= MASTHEAD ================= -->
-    <header class="masthead">
-      <div class="masthead__ears">
-        <div class="ear">
-          <b>Weather in the model</b>
-          <span>AUC 0.762 out of time · PSI 0.0001, stable · no drift expected</span>
-        </div>
-        <div class="ear ear--right">
-          <b>Price</b>
-          <span>One conversation.<br />Free for recruiters.</span>
-        </div>
+  <main class="page" id="top">
+    <!-- ============ INTRO ============ -->
+    <section class="intro" aria-labelledby="name">
+      <div class="intro__text">
+        <p class="label" id="roleLine"></p>
+        <h1 id="name" data-bind="name"></h1>
+        <p class="intro__lede" data-bind="headline"></p>
+        <p class="intro__links" id="links"></p>
       </div>
-      <h1 class="masthead__title"><a href="#top" data-paper-title>The Daily Model</a></h1>
-      <p class="masthead__motto" data-paper-motto></p>
-      <div class="masthead__rule">
-        <span id="volNo">Vol. I · No. 1</span>
-        <span id="today">Baku</span>
-        <span data-bind="location"></span>
+      <img class="intro__photo" id="avatar" alt="Mehdi Mehdiyev" width="160" height="160" />
+    </section>
+    <dl class="facts" id="facts"></dl>
+
+    <!-- ============ PROJECTS ============ -->
+    <section class="section" id="projects" aria-labelledby="h-projects">
+      <h2 class="section__title" id="h-projects">Projects</h2>
+      <div id="projectList"></div>
+      <p class="more"><a id="moreWork" target="_blank" rel="noopener">More projects on GitHub →</a></p>
+    </section>
+
+    <!-- ============ EXPERIENCE ============ -->
+    <section class="section" id="experience" aria-labelledby="h-exp">
+      <h2 class="section__title" id="h-exp">Experience</h2>
+      <div id="experienceList"></div>
+    </section>
+
+    <!-- ============ SKILLS ============ -->
+    <section class="section" id="skills" aria-labelledby="h-skills">
+      <h2 class="section__title" id="h-skills">Skills</h2>
+      <dl class="skills" id="skillList"></dl>
+    </section>
+
+    <!-- ============ EDUCATION + CERTIFICATES ============ -->
+    <section class="section" id="education" aria-labelledby="h-edu">
+      <h2 class="section__title" id="h-edu">Education &amp; certificates</h2>
+      <div class="split">
+        <div id="educationList"></div>
+        <ul class="certs" id="certList"></ul>
       </div>
-      <nav class="masthead__nav" aria-label="Sections">
-        <a href="#front">Front page</a>
-        <a href="#technology">Technology <small>projects</small></a>
-        <a href="#business">Business <small>career</small></a>
-        <a href="#record">Public record <small>education &amp; certificates</small></a>
-        <a href="#markets">Markets <small>stack</small></a>
-        <a href="#classifieds">Classifieds <small>contact</small></a>
-      </nav>
-    </header>
+    </section>
 
-    <!-- ticker -->
-    <div class="ticker" aria-label="Stack ticker">
-      <span class="ticker__label">Stack</span>
-      <div class="ticker__track"><div class="ticker__tape" id="ticker"></div></div>
-    </div>
-
-    <main>
-      <!-- ================= FRONT PAGE ================= -->
-      <section class="front" id="front" aria-labelledby="leadHead">
-        <!-- left rail -->
-        <aside class="rail rail--left">
-          <div class="box">
-            <h2 class="box__head">In brief</h2>
-            <dl class="brief" id="glance"></dl>
-          </div>
-
-          <div class="box notice">
-            <h2 class="box__head">Notice</h2>
-            <p class="notice__text">Hiring committees are advised that the following file has been reviewed.</p>
-            <button type="button" class="stamp" id="stamp" aria-label="Approved for interview. Click to stamp again.">
-              <span>Approved</span><small>for interview</small>
-            </button>
-          </div>
-
-          <div class="box">
-            <h2 class="box__head">Inside today</h2>
-            <ol class="inside" id="inside"></ol>
-          </div>
-        </aside>
-
-        <!-- lead story -->
-        <article class="lead">
-          <p class="kicker" id="leadKicker"></p>
-          <h2 class="lead__headline" id="leadHead"></h2>
-          <p class="deck" id="leadDeck"></p>
-          <p class="byline"><span id="leadBy"></span> · <time id="leadDate"></time></p>
-
-          <figure class="photo lead__photo">
-            <img id="avatar" alt="Mehdi Mehdiyev" width="600" height="600" />
-            <figcaption><b>Mehdi Mehdiyev</b>, data scientist at Yelo Bank. <span class="credit">Photo: GitHub</span></figcaption>
-          </figure>
-
-          <div class="columns" id="leadBody"></div>
-        </article>
-
-        <!-- right rail -->
-        <aside class="rail rail--right">
-          <div class="box">
-            <h2 class="box__head">By the numbers</h2>
-            <dl class="numbers" id="stats"></dl>
-          </div>
-          <blockquote class="pull">
-            <p id="pullQuote"></p>
-            <cite id="pullBy"></cite>
-          </blockquote>
-          <div class="box">
-            <h2 class="box__head">Profile</h2>
-            <div class="profile" id="about"></div>
-            <ul class="langs" id="langs"></ul>
-          </div>
-        </aside>
-      </section>
-
-      <!-- ================= TECHNOLOGY: projects ================= -->
-      <section class="section" id="technology" aria-labelledby="techHead">
-        <header class="section__bar">
-          <h2 id="techHead">Technology</h2>
-          <p>Projects, reported in chapters — the picture opens the live demo</p>
-        </header>
-        <div id="chapters"></div>
-        <a class="more" id="moreWork" target="_blank" rel="noopener">Continued on GitHub — further projects in the archive →</a>
-      </section>
-
-      <!-- ================= BUSINESS: career ================= -->
-      <section class="section" id="business" aria-labelledby="bizHead">
-        <header class="section__bar">
-          <h2 id="bizHead">Business</h2>
-          <p>Career, newest first</p>
-        </header>
-        <div class="business" id="experience"></div>
-      </section>
-
-      <!-- ================= PUBLIC RECORD: education + certificates ================= -->
-      <section class="section" id="record" aria-labelledby="recHead">
-        <header class="section__bar">
-          <h2 id="recHead">Public record</h2>
-          <p>Education and certificates on file — each certificate links to the issuer</p>
-        </header>
-        <div class="record">
-          <div class="record__edu">
-            <h3 class="sub">Education</h3>
-            <div id="education"></div>
-          </div>
-          <div class="record__certs">
-            <h3 class="sub">Certificates of record <span id="certCount"></span></h3>
-            <ol class="certs" id="certs"></ol>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= MARKETS: stack ================= -->
-      <section class="section" id="markets" aria-labelledby="mktHead">
-        <header class="section__bar">
-          <h2 id="mktHead">Markets</h2>
-          <p>The stack, listed like a stock table — ▲ marks tools used in today's stories; point at one to find it</p>
-        </header>
-        <div class="markets" id="stack"></div>
-      </section>
-
-      <!-- ================= CLASSIFIEDS: contact ================= -->
-      <section class="section" id="classifieds" aria-labelledby="clsHead">
-        <header class="section__bar">
-          <h2 id="clsHead">Classifieds</h2>
-          <p>Contact</p>
-        </header>
-        <div class="classifieds" id="contact"></div>
-      </section>
-    </main>
-
-    <footer class="colophon">
-      <span>Printed in Baku on screen-grade newsprint.</span>
-      <span>Set in Newsreader, Libre Franklin &amp; UnifrakturMaguntia · hand-written HTML, no framework.</span>
-      <span>© <span id="year"></span> Mehdi Mehdiyev</span>
+    <footer class="footer">
+      <p class="footer__ask">Open to a conversation about credit risk, production ML or RAG.</p>
+      <p class="intro__links" id="footerLinks"></p>
+      <p class="footer__small">© <span id="year"></span> Mehdi Mehdiyev · mehdiyev.dev</p>
     </footer>
-  </div>
+  </main>
 
-  <!-- clean, ATS-friendly resume used only for print / cv.pdf -->
+  <!-- plain resume used only for print / cv.pdf -->
   <article class="cv" id="cv" aria-hidden="true"></article>
 
   <script src="data.js"></script>
