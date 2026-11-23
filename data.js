@@ -30,7 +30,7 @@ window.RESUME = {
     "I build production ML for lending — and make it fast, monitored and reliable enough to run every day.",
 
   about: [
-    "Data Scientist at Yelo Bank in Baku. I work on production ML systems the bank uses daily — personalized credit offers and micro-business pre-offer scoring — from the data access layer to the API and monitoring.",
+    "Data Scientist at Yelo Bank in Baku. I work on ==production ML systems the bank uses daily== — personalized credit offers and micro-business pre-offer scoring — from the data access layer to the API and monitoring.",
     "My strongest ground is tabular ML for finance — credit scoring, probability-of-default models, interpretable WoE scorecards next to gradient boosting benchmarks. I'm now extending into LLM systems and retrieval-augmented generation.",
   ],
 
@@ -163,7 +163,7 @@ window.RESUME = {
       logo: "yelo.png",
       place: "Baku",
       points: [
-        "Retail Personalized Offer — model that computes a maximum personalized credit offer per client and predicts whether they can handle it. Rewrote the DB layer, moved to parallel processing with Python multiprocessing (17–20× speedup), added decorator-based logging and automatic result persistence: 5,000 clients went from 14.5 hours to 45 minutes.",
+        "Retail Personalized Offer — model that computes a maximum personalized credit offer per client and predicts whether they can handle it. Rewrote the DB layer, moved to parallel processing with Python multiprocessing (17–20× speedup), added decorator-based logging and automatic result persistence: ==5,000 clients went from 14.5 hours to 45 minutes==.",
         "Micro-scoring Pre-Offer — engine that finds micro-business clients with unused limits, runs Risk Rules / Stop Factors / Business Rules chains and auto-creates loan leads (refinancing or parallel top-up). Restored it end-to-end: fixed deprecated integrations, rewrote data access, vectorized and parallelized inference.",
         "Built a FastAPI interface with dynamic toggles for Risk Rules and lead creation. Both systems shipped containerized with Docker, versioned on GitLab and monitored in Grafana.",
       ],
