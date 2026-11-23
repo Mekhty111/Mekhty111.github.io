@@ -6,6 +6,8 @@ Static resume / portfolio (HTML · CSS · vanilla JS), built for GitHub Pages. N
 
 All content lives in **`data.js`** — name, about, stats, skills, projects, experience, education, certificates, languages.
 
+- **Front page story:** `paper.lead` — kicker, headline, deck, body paragraphs and a pull quote. `paper.title` / `paper.motto` set the masthead. Wrap a phrase in `==…==` to print it with a highlighter.
+- **Project chapters:** each project can have `headline`, `deck`, `body` (paragraphs) and `image` (a screenshot in `assets/shots/`). The picture links to `demo` if set, otherwise to the repo.
 - **At a glance:** the `glance` strip under the hero is the 10-second summary. `{experienceSince}` turns into the length of experience counted from `experienceSince`.
 - **Contacts:** set `links.email`, `links.phone` or `links.telegram` to show them in the contact section and in the PDF header.
 - **New project card:** add an object to `projects` (`id`, `title`, `kicker`, `description`, `tags`, `metrics`, `url`, `year`). Cards link to `url`.

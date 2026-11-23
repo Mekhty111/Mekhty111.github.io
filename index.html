@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mehdi Mehdiyev — Data Scientist</title>
-  <meta name="description" content="Mehdi Mehdiyev — Data Scientist at Yelo Bank, Baku. Production ML for lending, credit risk modelling, LLM / RAG systems, FastAPI deployment." />
-  <meta property="og:title" content="Mehdi Mehdiyev — Data Scientist" />
-  <meta property="og:description" content="Data Scientist at Yelo Bank. Production ML for lending, credit risk modelling, LLM / RAG systems." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/98921340?v=4" />
-  <meta name="theme-color" content="#ece7dc" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ece7dc'/%3E%3Ctext x='16' y='23' font-family='Arial Narrow,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%231b1a17'%3EM%3C/text%3E%3Crect x='3' y='27' width='26' height='2' fill='%23c8361d'/%3E%3C/svg%3E" />
+  <title>The Daily Model — Mehdi Mehdiyev, Data Scientist</title>
+  <meta name="description" content="Mehdi Mehdiyev — Data Scientist at Yelo Bank, Baku. Production ML for lending, credit risk modelling, LLM / RAG systems. A resume set as a newspaper." />
+  <meta property="og:title" content="The Daily Model — Mehdi Mehdiyev, Data Scientist" />
+  <meta property="og:description" content="Bank's 14-hour credit job now finishes in 45 minutes. Production ML for lending, credit risk, LLM / RAG." />
+  <meta property="og:image" content="https://mehdiyev.dev/assets/shots/home-credit.png" />
+  <meta name="theme-color" content="#efe9dc" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23efe9dc'/%3E%3Ctext x='16' y='25' font-family='Georgia,serif' font-weight='700' font-size='24' text-anchor='middle' fill='%23161513'%3EM%3C/text%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600&family=Libre+Franklin:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script>
     (function () {
@@ -22,165 +22,183 @@
   </script>
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
+  <a class="skip" href="#front">Skip to the front page</a>
 
-  <!-- Running header, like a printed report -->
-  <header class="runhead" id="top">
-    <a class="runhead__id" href="#top"><b>Mehdiyev, M.</b><span> / Candidate file</span></a>
-    <nav class="runhead__nav" aria-label="Sections">
-      <a href="#subject"><i>§1</i> Subject</a>
-      <a href="#experience"><i>§2</i> Experience</a>
-      <a href="#education"><i>§3</i> Education</a>
-      <a href="#exhibits"><i>§4</i> Exhibits</a>
-      <a href="#features"><i>§5</i> Stack</a>
-      <a href="#credentials"><i>§6</i> Credentials</a>
-      <a href="#contact"><i>§7</i> Contact</a>
+  <!-- sticky folio: appears once the masthead scrolls away -->
+  <header class="folio" id="folio" aria-label="Page header">
+    <a class="folio__name" href="#top" data-paper-title>The Daily Model</a>
+    <nav class="folio__nav" aria-label="Sections">
+      <a href="#front">Front page</a>
+      <a href="#technology">Technology</a>
+      <a href="#business">Business</a>
+      <a href="#record">Record</a>
+      <a href="#markets">Markets</a>
+      <a href="#classifieds">Classifieds</a>
     </nav>
-    <div class="runhead__tools">
-      <span class="runhead__where" id="where" aria-hidden="true"></span>
-      <a class="tool tool--ink" data-cv href="cv.pdf" download title="Download resume as PDF">CV ↓</a>
-      <button type="button" id="themeBtn" class="tool" title="Switch between paper and carbon">
-        <span class="t-light">Carbon</span><span class="t-dark">Paper</span>
-      </button>
+    <div class="folio__tools">
+      <a class="btn-ink" data-cv href="cv.pdf" download>CV <span aria-hidden="true">↓</span></a>
+      <button type="button" class="btn-line" id="themeBtn"><span class="t-day">Night edition</span><span class="t-night">Day edition</span></button>
     </div>
   </header>
 
-  <main id="main">
-    <!-- ============ COVER ============ -->
-    <section class="cover sheet" aria-labelledby="name">
-      <div class="cover__meta mono">
-        <span>File no. <b id="fileNo">MM</b></span>
-        <span data-bind="location"></span>
-        <span>Classification: <b>Open</b></span>
-      </div>
-
-      <h1 class="cover__name" id="name">
-        <span data-bind="firstName">Mehdi</span>
-        <span data-bind="lastName">Mehdiyev</span>
-      </h1>
-
-      <div class="cover__grid">
-        <div class="cover__lede">
-          <p class="kicker mono" data-bind="role"></p>
-          <p class="lede" data-bind="headline"></p>
-          <p class="print-contacts" id="printContacts"></p>
-          <p class="cover__links">
-            <a class="cover__cv" data-cv href="cv.pdf" download>Download CV <small>PDF</small></a>
-            <a data-href="github" target="_blank" rel="noopener">GitHub ↗</a>
-            <a data-href="linkedin" target="_blank" rel="noopener">LinkedIn ↗</a>
-          </p>
+  <div class="paper" id="top">
+    <!-- ================= MASTHEAD ================= -->
+    <header class="masthead">
+      <div class="masthead__ears">
+        <div class="ear">
+          <b>Weather in the model</b>
+          <span>AUC 0.762 out of time · PSI 0.0001, stable · no drift expected</span>
         </div>
+        <div class="ear ear--right">
+          <b>Price</b>
+          <span>One conversation.<br />Free for recruiters.</span>
+        </div>
+      </div>
+      <h1 class="masthead__title"><a href="#top" data-paper-title>The Daily Model</a></h1>
+      <p class="masthead__motto" data-paper-motto></p>
+      <div class="masthead__rule">
+        <span id="volNo">Vol. I · No. 1</span>
+        <span id="today">Baku</span>
+        <span data-bind="location"></span>
+      </div>
+      <nav class="masthead__nav" aria-label="Sections">
+        <a href="#front">Front page</a>
+        <a href="#technology">Technology <small>projects</small></a>
+        <a href="#business">Business <small>career</small></a>
+        <a href="#record">Public record <small>education &amp; certificates</small></a>
+        <a href="#markets">Markets <small>stack</small></a>
+        <a href="#classifieds">Classifieds <small>contact</small></a>
+      </nav>
+    </header>
 
-        <aside class="scorecard" aria-label="At a glance">
-          <div class="scorecard__head mono"><span>At a glance</span><span>Value</span></div>
-          <table class="scorecard__table"><tbody id="glance"></tbody></table>
-          <div class="scorecard__foot mono">
-            <span>Decision</span>
-            <button type="button" class="stamp" id="stamp" aria-label="Decision: approved for interview. Click to stamp again.">
+    <!-- ticker -->
+    <div class="ticker" aria-label="Stack ticker">
+      <span class="ticker__label">Stack</span>
+      <div class="ticker__track"><div class="ticker__tape" id="ticker"></div></div>
+    </div>
+
+    <main>
+      <!-- ================= FRONT PAGE ================= -->
+      <section class="front" id="front" aria-labelledby="leadHead">
+        <!-- left rail -->
+        <aside class="rail rail--left">
+          <div class="box">
+            <h2 class="box__head">In brief</h2>
+            <dl class="brief" id="glance"></dl>
+          </div>
+
+          <div class="box notice">
+            <h2 class="box__head">Notice</h2>
+            <p class="notice__text">Hiring committees are advised that the following file has been reviewed.</p>
+            <button type="button" class="stamp" id="stamp" aria-label="Approved for interview. Click to stamp again.">
               <span>Approved</span><small>for interview</small>
             </button>
           </div>
+
+          <div class="box">
+            <h2 class="box__head">Inside today</h2>
+            <ol class="inside" id="inside"></ol>
+          </div>
         </aside>
-      </div>
-    </section>
 
-    <!-- ============ §1 SUBJECT ============ -->
-    <section class="sheet section" id="subject" aria-labelledby="h-subject">
-      <header class="shead">
-        <span class="shead__no">§1</span>
-        <h2 id="h-subject">Subject</h2>
-        <span class="shead__note mono">who this file is about</span>
-      </header>
-      <div class="subject">
-        <figure class="subject__photo">
-          <img id="avatar" alt="Portrait of Mehdi Mehdiyev" width="420" height="525" loading="lazy" />
-          <figcaption class="mono">Fig. 1 — the subject</figcaption>
-        </figure>
-        <div class="subject__text">
-          <div class="prose" id="about"></div>
-          <dl class="figures" id="stats"></dl>
-          <dl class="facts" id="facts"></dl>
+        <!-- lead story -->
+        <article class="lead">
+          <p class="kicker" id="leadKicker"></p>
+          <h2 class="lead__headline" id="leadHead"></h2>
+          <p class="deck" id="leadDeck"></p>
+          <p class="byline"><span id="leadBy"></span> · <time id="leadDate"></time></p>
+
+          <figure class="photo lead__photo">
+            <img id="avatar" alt="Mehdi Mehdiyev" width="600" height="600" />
+            <figcaption><b>Mehdi Mehdiyev</b>, data scientist at Yelo Bank. <span class="credit">Photo: GitHub</span></figcaption>
+          </figure>
+
+          <div class="columns" id="leadBody"></div>
+        </article>
+
+        <!-- right rail -->
+        <aside class="rail rail--right">
+          <div class="box">
+            <h2 class="box__head">By the numbers</h2>
+            <dl class="numbers" id="stats"></dl>
+          </div>
+          <blockquote class="pull">
+            <p id="pullQuote"></p>
+            <cite id="pullBy"></cite>
+          </blockquote>
+          <div class="box">
+            <h2 class="box__head">Profile</h2>
+            <div class="profile" id="about"></div>
+            <ul class="langs" id="langs"></ul>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ================= TECHNOLOGY: projects ================= -->
+      <section class="section" id="technology" aria-labelledby="techHead">
+        <header class="section__bar">
+          <h2 id="techHead">Technology</h2>
+          <p>Projects, reported in chapters — the picture opens the live demo</p>
+        </header>
+        <div id="chapters"></div>
+        <a class="more" id="moreWork" target="_blank" rel="noopener">Continued on GitHub — further projects in the archive →</a>
+      </section>
+
+      <!-- ================= BUSINESS: career ================= -->
+      <section class="section" id="business" aria-labelledby="bizHead">
+        <header class="section__bar">
+          <h2 id="bizHead">Business</h2>
+          <p>Career, newest first</p>
+        </header>
+        <div class="business" id="experience"></div>
+      </section>
+
+      <!-- ================= PUBLIC RECORD: education + certificates ================= -->
+      <section class="section" id="record" aria-labelledby="recHead">
+        <header class="section__bar">
+          <h2 id="recHead">Public record</h2>
+          <p>Education and certificates on file — each certificate links to the issuer</p>
+        </header>
+        <div class="record">
+          <div class="record__edu">
+            <h3 class="sub">Education</h3>
+            <div id="education"></div>
+          </div>
+          <div class="record__certs">
+            <h3 class="sub">Certificates of record <span id="certCount"></span></h3>
+            <ol class="certs" id="certs"></ol>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ============ §2 EXPERIENCE ============ -->
-    <section class="sheet section" id="experience" aria-labelledby="h-experience">
-      <header class="shead">
-        <span class="shead__no">§2</span>
-        <h2 id="h-experience">Experience</h2>
-        <span class="shead__note mono">newest first</span>
-      </header>
-      <ol class="ledger" id="experienceList"></ol>
-    </section>
+      <!-- ================= MARKETS: stack ================= -->
+      <section class="section" id="markets" aria-labelledby="mktHead">
+        <header class="section__bar">
+          <h2 id="mktHead">Markets</h2>
+          <p>The stack, listed like a stock table — ▲ marks tools used in today's stories; point at one to find it</p>
+        </header>
+        <div class="markets" id="stack"></div>
+      </section>
 
-    <!-- ============ §3 EDUCATION ============ -->
-    <section class="sheet section" id="education" aria-labelledby="h-education">
-      <header class="shead">
-        <span class="shead__no">§3</span>
-        <h2 id="h-education">Education</h2>
-      </header>
-      <ol class="ledger" id="educationList"></ol>
-    </section>
+      <!-- ================= CLASSIFIEDS: contact ================= -->
+      <section class="section" id="classifieds" aria-labelledby="clsHead">
+        <header class="section__bar">
+          <h2 id="clsHead">Classifieds</h2>
+          <p>Contact</p>
+        </header>
+        <div class="classifieds" id="contact"></div>
+      </section>
+    </main>
 
-    <!-- ============ §4 EXHIBITS ============ -->
-    <section class="sheet section" id="exhibits" aria-labelledby="h-exhibits">
-      <header class="shead">
-        <span class="shead__no">§4</span>
-        <h2 id="h-exhibits">Exhibits</h2>
-        <span class="shead__note mono">selected projects — each opens its repository</span>
-      </header>
-      <div class="exhibits" id="exhibitList"></div>
-    </section>
+    <footer class="colophon">
+      <span>Printed in Baku on screen-grade newsprint.</span>
+      <span>Set in Newsreader, Libre Franklin &amp; UnifrakturMaguntia · hand-written HTML, no framework.</span>
+      <span>© <span id="year"></span> Mehdi Mehdiyev</span>
+    </footer>
+  </div>
 
-    <!-- ============ §5 STACK ============ -->
-    <section class="sheet section" id="features" aria-labelledby="h-features">
-      <header class="shead">
-        <span class="shead__no">§5</span>
-        <h2 id="h-features">Stack</h2>
-        <span class="shead__note mono">point at a tool to find it in the exhibits</span>
-      </header>
-      <div class="features" id="featureList"></div>
-    </section>
-
-    <!-- ============ §6 CREDENTIALS ============ -->
-    <section class="sheet section" id="credentials" aria-labelledby="h-credentials">
-      <header class="shead">
-        <span class="shead__no">§6</span>
-        <h2 id="h-credentials">Credentials</h2>
-        <span class="shead__note mono">sort by a column · click a row to verify</span>
-      </header>
-      <div class="tablewrap">
-        <table class="certs">
-          <thead>
-            <tr>
-              <th scope="col"><button type="button" data-sort="date">Issued</button></th>
-              <th scope="col"><button type="button" data-sort="title">Credential</button></th>
-              <th scope="col"><button type="button" data-sort="issuer">Issuer</button></th>
-              <th scope="col" class="certs__ref"><span>Ref.</span></th>
-            </tr>
-          </thead>
-          <tbody id="certRows"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ============ §7 CONTACT ============ -->
-    <section class="sheet decision" id="contact" aria-labelledby="h-contact">
-      <header class="shead">
-        <span class="shead__no">§7</span>
-        <h2 id="h-contact">Contact</h2>
-      </header>
-      <p class="decision__big">Recommended next step: <em>talk to Mehdi.</em></p>
-      <dl class="contact" id="contactList"></dl>
-    </section>
-  </main>
-
-  <footer class="colophon sheet mono">
-    <span>— End of file —</span>
-    <span>Set in Archivo, Source Serif &amp; IBM Plex Mono. Hand-written HTML, no framework.</span>
-    <span>© <span id="year"></span></span>
-  </footer>
+  <!-- clean, ATS-friendly resume used only for print / cv.pdf -->
+  <article class="cv" id="cv" aria-hidden="true"></article>
 
   <script src="data.js"></script>
   <script src="main.js"></script>

@@ -1,33 +1,40 @@
 (() => {
   "use strict";
   const R = window.RESUME;
+  const P = R.paper || {};
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const esc = (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  // ==text== in data.js becomes a highlighter mark
-  const rich = (s) => esc(s).replace(/==(.+?)==/g, "<mark>$1</mark>");
+  const rich = (s) => esc(s).replace(/==(.+?)==/g, "<mark>$1</mark>"); // ==text== → highlighter
+  const plain = (s) => String(s ?? "").replace(/==/g, "");
   const host = (u) => u.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+  const now = new Date();
 
-  /* ------------------------------------------------------------------ binds */
+  /* ---------------------------------------------------------------- binds */
   $$("[data-bind]").forEach((el) => (el.textContent = R[el.dataset.bind] ?? el.textContent));
   $$("[data-href]").forEach((el) => (R.links[el.dataset.href] ? (el.href = R.links[el.dataset.href]) : el.remove()));
   $$("[data-cv]").forEach((el) => (R.cv ? (el.href = R.cv) : el.remove()));
+  $$("[data-paper-title]").forEach((el) => (el.textContent = P.title || el.textContent));
+  $$("[data-paper-motto]").forEach((el) => (el.textContent = P.motto || ""));
   $("#avatar").src = R.avatar;
-  const now = new Date();
   $("#year").textContent = now.getFullYear();
-  $("#fileNo").textContent = `MM-${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-  /* ------------------------------------------------------------------ dates
-     "Jul 2025 — Feb 2026" / "— Now" → "8 mos", "1 yr 4 mos" (inclusive, like LinkedIn) */
+  // dateline: Vol. = years on GitHub, No. = day of the year
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 864e5);
+  $("#volNo").textContent = `Vol. ${ROMAN[Math.min(10, now.getFullYear() - 2021)] || "I"} · No. ${dayOfYear}`;
+  const dateline = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  $("#today").textContent = dateline;
+
+  /* ---------------------------------------------------------------- dates */
   const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
   const parseMonth = (str) => {
     const t = String(str || "").trim().toLowerCase();
     if (/^(now|present|today)$/.test(t)) return now.getFullYear() * 12 + now.getMonth();
     const m = t.match(/^([a-z]{3})[a-z]*\.?\s+(\d{4})$/);
-    if (!m || MONTHS.indexOf(m[1]) < 0) return null;
-    return +m[2] * 12 + MONTHS.indexOf(m[1]);
+    return m && MONTHS.includes(m[1]) ? +m[2] * 12 + MONTHS.indexOf(m[1]) : null;
   };
   const fmtMonths = (n) => {
     const y = Math.floor(n / 12), mo = n % 12, out = [];
@@ -35,263 +42,255 @@
     if (mo || !y) out.push(`${mo || 1} mo${(mo || 1) > 1 ? "s" : ""}`);
     return out.join(" ");
   };
-  const span = (from, to) => {
-    const a = parseMonth(from), b = parseMonth(to);
-    return a == null || b == null || b < a ? "" : fmtMonths(b - a + 1);
-  };
+  const span = (a, b) => { const x = parseMonth(a), y = parseMonth(b); return x == null || y == null || y < x ? "" : fmtMonths(y - x + 1); };
   const splitPeriod = (p) => String(p || "").split(/\s*[—–]\s*/);
   const duration = (p) => { const [a, b] = splitPeriod(p); return b ? span(a, b) : ""; };
+  const fill = (s) => String(s).replace("{experienceSince}", span(R.experienceSince, "now") || R.experienceSince || "");
 
-  /* -------------------------------------------------- cover: at a glance */
-  const fill = (str) => str.replace("{experienceSince}", span(R.experienceSince, "now") || R.experienceSince || "");
-  $("#glance").innerHTML = (R.glance || [])
-    .map((g) => `<tr><th scope="row">${esc(g.label)}</th><td>${esc(fill(g.value))}</td></tr>`)
-    .join("");
-
-  $("#printContacts").innerHTML = [
-    R.location && esc(R.location),
-    R.links.email && `<a href="mailto:${esc(R.links.email)}">${esc(R.links.email)}</a>`,
-    R.links.phone && esc(R.links.phone),
-    ...[R.links.linkedin, R.links.github, R.site].filter(Boolean).map((u) => `<a href="${esc(u)}">${esc(host(u))}</a>`),
-  ].filter(Boolean).join("  ·  ");
-
-  const stamp = $("#stamp");
-  const hit = () => {
-    stamp.classList.remove("is-hit", "is-waiting");
-    void stamp.offsetWidth; // restart the animation
-    stamp.classList.add("is-hit");
-  };
-  stamp.addEventListener("click", hit);
-  if (!reduceMotion) {
-    stamp.classList.add("is-waiting");
-    setTimeout(hit, 700);
-  }
-
-  /* ---------------------------------------------------------- §1 subject */
-  $("#about").innerHTML = R.about.map((p) => `<p>${rich(p)}</p>`).join("");
-  $("#stats").innerHTML = (R.stats || [])
-    .map((s) => `<div><dt>${esc(s.label)}</dt><dd>${(+s.value).toFixed(s.decimals || 0)}${esc(s.suffix || "")}</dd></div>`)
-    .join("");
-  const facts = [
-    ["Location", R.location],
-    ["Languages", (R.languages || []).map((l) => `${l.name} — ${l.level.toLowerCase()}`).join(" · ")],
-    R.site && ["Site", host(R.site)],
-  ].filter(Boolean);
-  $("#facts").innerHTML = facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
-
-  /* --------------------------------------------------------------- logos
-     image from assets/logos/, initials as a fallback */
-  const initials = (name) =>
-    (name || "?").split(/[\s·×—-]+/).filter((w) => /^[A-ZА-ЯЁ0-9]/.test(w)).slice(0, 2).map((w) => w[0]).join("") || (name || "?")[0];
-  const logoImg = (file, alt) =>
-    `<img src="assets/logos/${esc(file)}" alt="" width="44" height="44" loading="lazy" decoding="async"
-      onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'logo__initials',textContent:this.dataset.fallback}))"
-      data-fallback="${esc(initials(alt))}" />`;
+  /* ---------------------------------------------------------------- logos */
+  const initials = (n) => (n || "?").split(/[\s·×—-]+/).filter((w) => /^[A-ZА-ЯЁ0-9]/.test(w)).slice(0, 2).map((w) => w[0]).join("") || (n || "?")[0];
   const logo = (files, name) => {
     const list = [].concat(files || []).filter(Boolean);
-    const inner = list.length ? list.map((f) => logoImg(f, name)).join("") : `<span class="logo__initials">${esc(initials(name))}</span>`;
+    const inner = list.length
+      ? list.map((f) => `<img src="assets/logos/${esc(f)}" alt="" width="40" height="40" loading="lazy" decoding="async"
+          onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'logo__initials',textContent:this.dataset.f}))" data-f="${esc(initials(name))}" />`).join("")
+      : `<span class="logo__initials">${esc(initials(name))}</span>`;
     return `<span class="logo ${list.length > 1 ? "logo--pair" : ""}" aria-hidden="true">${inner}</span>`;
   };
 
-  /* ------------------------------------------- §2–3 experience / education */
-  // "Project — details" → bold project name, then details
-  const point = (p) => {
-    const i = p.indexOf(" — ");
-    return i > 0 && i < 60 ? `<li><b>${rich(p.slice(0, i))}</b> — ${rich(p.slice(i + 3))}</li>` : `<li>${rich(p)}</li>`;
-  };
-  const ledger = (items) =>
-    (items || [])
-      .map((e) => {
-        const [from, to] = splitPeriod(e.period);
-        const dur = duration(e.period);
-        return `<li class="entry">
-          <div class="entry__when"><b>${esc(to || "")}</b>${esc(from)}${dur ? `<span>${dur}</span>` : ""}</div>
-          <div>
-            <div class="entry__head">
-              ${logo(e.logo, e.org)}
-              <div>
-                <h3 class="entry__role">${esc(e.title)}</h3>
-                <p class="entry__org">${esc(e.org)}${e.place ? `, ${esc(e.place)}` : ""}</p>
-              </div>
-            </div>
-            ${e.points && e.points.length ? `<ol class="entry__points">${e.points.map(point).join("")}</ol>` : ""}
-            ${e.stack && e.stack.length ? `<p class="entry__stack"><b>Tools</b>${e.stack.map(esc).join(" / ")}</p>` : ""}
-          </div>
-        </li>`;
-      })
-      .join("");
-  $("#experienceList").innerHTML = ledger(R.experience);
-  $("#educationList").innerHTML = ledger(R.education);
+  /* ================================================================ FRONT */
+  $("#glance").innerHTML = (R.glance || []).map((g) => `<div><dt>${esc(g.label)}</dt><dd>${esc(fill(g.value))}</dd></div>`).join("");
 
-  /* ----------------------------------------------------------- §4 exhibits */
-  function figRoc(auc) {
-    const k = auc / (1 - auc), W = 400, H = 140, pts = [];
-    const tpr = (x) => 1 - Math.pow(1 - x, k);
-    for (let i = 0; i <= 60; i++) pts.push(`${((i / 60) * W).toFixed(1)},${(H - tpr(i / 60) * H).toFixed(1)}`);
-    const d = "M" + pts.join(" L");
-    let bx = 0, best = 0; // operating point at max KS = max(TPR - FPR)
-    for (let i = 1; i < 120; i++) { const x = i / 120, ks = tpr(x) - x; if (ks > best) { best = ks; bx = x; } }
-    const X = bx * W, Y = H - tpr(bx) * H;
-    return {
-      svg: `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="ROC curve of the scorecard, AUC ${auc}">
-        <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="5" stroke="currentColor" stroke-opacity=".32" stroke-width="1"/></pattern></defs>
-        ${[0.25, 0.5, 0.75].map((g) => `<line class="ink-grid" x1="0" x2="${W}" y1="${H * g}" y2="${H * g}"/><line class="ink-grid" y1="0" y2="${H}" x1="${W * g}" x2="${W * g}"/>`).join("")}
-        <path fill="url(#hatch)" d="${d} L${W},${H} L0,${H} Z"/>
-        <line class="ink-ref" x1="0" y1="${H}" x2="${W}" y2="0"/>
-        <path class="ink-line" d="${d}"/>
-        <line class="ink-red" x1="${X}" x2="${X}" y1="${H - bx * H}" y2="${Y}"/>
-        <circle class="ink-dot" cx="${X}" cy="${Y}" r="3.5"/>
-        <text class="ink-txt" x="${X + 8}" y="${Y + 24}">max KS</text>
-      </svg>`,
-      cap: `ROC, out-of-time sample — hatched area = AUC ${auc}`,
-    };
-  }
-  function figRag() {
-    const y = 58, h = 34, w = 78, xs = [0, 106, 212, 318], labels = ["Tax docs", "Embed", "Retrieve", "LLM"];
-    return {
-      svg: `<svg viewBox="0 0 400 140" role="img" aria-label="Pipeline: tax documents, embeddings, retrieval, LLM">
-        ${xs.slice(0, -1).map((x, i) => `<path class="ink-line ${i === 1 ? "flow" : ""}" d="M${x + w},${y + h / 2} H${xs[i + 1]}"/>`).join("")}
-        <path class="ink-red flow" d="M${318 + w / 2},${y} C330,10 262,10 ${212 + w / 2},${y}"/>
-        <text class="ink-txt" x="265" y="16" text-anchor="middle">question</text>
-        ${xs.map((x, i) => `<rect class="ink-box ${i >= 2 ? "ink-box--red" : ""}" x="${x + 0.5}" y="${y}" width="${w}" height="${h}"/>
-          <text class="ink-txt" x="${x + w / 2}" y="${y + h / 2 + 3.5}" text-anchor="middle">${labels[i]}</text>`).join("")}
-        <path class="ink-line" d="M${318 + w / 2},${y + h} V${y + h + 16}"/>
-        <text class="ink-txt" x="${318 + w / 2}" y="${y + h + 30}" text-anchor="middle">cited answer</text>
-      </svg>`,
-      cap: "Retrieval-augmented generation, schematic",
-    };
-  }
-  const figFor = (p) => {
-    if (p.id === "tax-rag") return figRag();
-    const auc = (p.metrics || []).find((m) => /auc/i.test(m.label));
-    return auc ? figRoc(+auc.value) : null;
-  };
-  const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const L = P.lead || {};
+  $("#leadKicker").textContent = L.kicker || "";
+  $("#leadHead").textContent = L.headline || R.headline;
+  $("#leadDeck").textContent = L.deck || "";
+  $("#leadBy").textContent = L.byline || "";
+  $("#leadDate").textContent = dateline;
+  $("#leadBody").innerHTML = (L.body || R.about).map((p) => `<p>${rich(p)}</p>`).join("");
+  $("#pullQuote").textContent = L.quote || "";
+  $("#pullBy").textContent = L.quoteBy ? "— " + L.quoteBy : "";
+  if (!L.quote) $(".pull").remove();
 
-  $("#exhibitList").innerHTML =
-    R.projects
-      .map((p, i) => {
-        const fig = figFor(p);
-        // links can't nest: the repo link is stretched over the whole sheet, the demo link sits above it
-        return `<article class="exhibit" data-id="${esc(p.id)}">
-          <a class="exhibit__cover" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="${esc(p.title)} — open repository on GitHub"></a>
-          <div class="exhibit__tag mono"><b>Exhibit ${LETTERS[i]}</b><span>${esc(p.year)} · ${esc(p.kicker)}</span></div>
-          <h3 class="exhibit__title">${esc(p.title.replace(/_/g, " "))}</h3>
-          ${fig ? `<figure class="exhibit__fig">${fig.svg}<figcaption class="mono">Fig. ${i + 2} — ${esc(fig.cap)}</figcaption></figure>` : ""}
-          <p class="exhibit__desc">${esc(p.description)}</p>
-          ${p.metrics && p.metrics.length ? `<div class="exhibit__metrics">${p.metrics.map((m) => `<div><b>${esc(m.value)}</b><span>${esc(m.label)}</span></div>`).join("")}</div>` : ""}
-          <div class="exhibit__foot">
-            <span class="exhibit__tags">${p.tags.map(esc).join(" / ")}</span>
-            <span class="exhibit__actions">
-              ${p.demo ? `<a class="exhibit__demo" href="${esc(p.demo)}" target="_blank" rel="noopener">Live demo · ${esc(new URL(p.demo).host)}</a>` : ""}
-              <span class="exhibit__open" aria-hidden="true">Repo →</span>
+  $("#stats").innerHTML = (R.stats || [])
+    .map((s) => `<div><dd>${(+s.value).toFixed(s.decimals || 0)}${esc(s.suffix || "")}</dd><dt>${esc(s.label)}</dt></div>`)
+    .join("");
+  $("#about").innerHTML = R.about.map((p) => `<p>${rich(p)}</p>`).join("");
+  $("#langs").innerHTML = (R.languages || []).map((l) => `<li>${esc(l.name)}<span>${esc(l.level)}</span></li>`).join("");
+
+  // index of the inside pages
+  const pages = [
+    ["Technology", "#technology", "A2"],
+    ["Business", "#business", "A3"],
+    ["Public record", "#record", "A4"],
+    ["Markets", "#markets", "A5"],
+    ["Classifieds", "#classifieds", "A6"],
+  ];
+  $("#inside").innerHTML = pages.map(([t, h, p]) => `<li><a href="${h}">${t}<b>${p}</b></a></li>`).join("");
+
+  // stamp
+  const stamp = $("#stamp");
+  const hit = () => { stamp.classList.remove("is-hit", "is-waiting"); void stamp.offsetWidth; stamp.classList.add("is-hit"); };
+  stamp.addEventListener("click", hit);
+  if (!reduceMotion) {
+    stamp.classList.add("is-waiting");
+    new IntersectionObserver((en, ob) => { if (en[0].isIntersecting) { setTimeout(hit, 250); ob.disconnect(); } }, { threshold: 0.8 }).observe(stamp);
+  }
+
+  /* --------------------------------------------------------------- ticker */
+  const flat = R.skills.flatMap((g) => g.items);
+  const tape = flat.map((s) => `<span><b>${esc(s.name.toUpperCase())}</b>${s.projects && s.projects.length ? `<i>▲ ${s.projects.length}</i>` : ""}</span>`).join("");
+  $("#ticker").innerHTML = tape + tape.replace(/<span>/g, '<span aria-hidden="true">'); // doubled for a seamless loop
+
+  /* =========================================================== TECHNOLOGY */
+  // chapters with a live demo lead the section
+  const projects = [...R.projects].sort((a, b) => (b.demo ? 1 : 0) - (a.demo ? 1 : 0));
+  const NUM = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+  function artRag() {
+    // ink drawing: documents → embeddings → retrieval → LLM, with a halftone-shaded stack of pages
+    return `<svg viewBox="0 0 400 300" role="img" aria-label="Drawing of the RAG pipeline: tax documents, embeddings, retrieval, LLM">
+      <defs><pattern id="halftone" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="1.2" fill="currentColor" fill-opacity=".55"/></pattern></defs>
+      ${[0, 1, 2].map((i) => `<rect class="ink" x="${30 + i * 8}" y="${40 + i * 8}" width="96" height="124" fill="var(--paper)"/>`).join("")}
+      <rect x="46" y="56" width="96" height="124" class="ink-dots"/>
+      <rect class="ink" x="46" y="56" width="96" height="124"/>
+      ${[0, 1, 2, 3, 4, 5, 6].map((i) => `<line class="ink" x1="58" x2="${128 - (i % 3) * 14}" y1="${76 + i * 13}" y2="${76 + i * 13}"/>`).join("")}
+      <text class="ink-cap" x="94" y="200" text-anchor="middle">Tax code</text>
+      <path class="ink flow" d="M150 118 H196"/>
+      <g>${Array.from({ length: 16 }, (_, i) => `<circle cx="${214 + (i % 4) * 14}" cy="${96 + Math.floor(i / 4) * 14}" r="${2 + ((i * 7) % 5) / 2}" fill="currentColor" fill-opacity="${0.3 + ((i * 3) % 7) / 10}"/>`).join("")}</g>
+      <text class="ink-cap" x="235" y="168" text-anchor="middle">Embeddings</text>
+      <path class="ink-spot flow" d="M270 118 H316"/>
+      <circle class="ink-spot" cx="346" cy="118" r="28"/>
+      <text class="ink-txt" x="346" y="122" text-anchor="middle">LLM</text>
+      <path class="ink" d="M346 146 V214"/>
+      <rect class="ink" x="250" y="214" width="140" height="56"/>
+      <text class="ink-txt" x="262" y="236">“Per article … :”</text>
+      <text class="ink-cap" x="262" y="256">answer + source</text>
+      <path class="ink-spot flow" d="M235 70 C 260 20, 330 20, 346 88"/>
+      <text class="ink-cap" x="292" y="30" text-anchor="middle">question</text>
+    </svg>`;
+  }
+
+  $("#chapters").innerHTML = projects
+    .map((p, i) => {
+      const target = p.demo || p.url;
+      const isDemo = !!p.demo;
+      const body = (p.body && p.body.length ? p.body : [p.description]).map((t) => `<p>${rich(t)}</p>`).join("");
+      const table = p.metrics && p.metrics.length
+        ? `<table class="datatable"><caption>The numbers</caption><thead><tr>${p.metrics.map((m) => `<th scope="col">${esc(m.label)}</th>`).join("")}</tr></thead>
+           <tbody><tr>${p.metrics.map((m) => `<td>${esc(m.value)}</td>`).join("")}</tr></tbody></table>`
+        : "";
+      const picture = p.image
+        ? `<span class="photo__frame"><img src="${esc(p.image)}" alt="${esc(p.imageAlt || p.title)}" loading="lazy" width="1280" height="860" /></span>`
+        : `<span class="plate__art">${p.id === "tax-rag" ? artRag() : ""}</span>`;
+      return `<article class="chapter ${i % 2 ? "chapter--flip" : ""}" data-id="${esc(p.id)}" aria-labelledby="ch-${esc(p.id)}">
+        <div>
+          <p class="chapter__no"><b>Chapter ${NUM[i] || i + 1}</b><span>${esc(p.kicker)} · ${esc(p.year)}</span></p>
+          <h3 class="chapter__headline" id="ch-${esc(p.id)}">${esc(p.headline || p.title)}</h3>
+          ${p.deck ? `<p class="deck">${esc(p.deck)}</p>` : ""}
+          <div class="columns">${body}</div>
+          ${table}
+          <p class="filed">Filed under: ${p.tags.map(esc).join(" · ")} — <a href="${esc(p.url)}" target="_blank" rel="noopener">source on GitHub</a></p>
+        </div>
+        <a class="plate" href="${esc(target)}" target="_blank" rel="noopener" aria-label="${esc(p.title)} — ${isDemo ? "open the live demo" : "open the repository"}">
+          <figure>
+            <span class="plate__card">
+              ${picture}
+              <span class="plate__label"><span class="${isDemo ? "plate__live" : ""}">${isDemo ? "Live demo — open" : "Read the source"}</span><span>${esc(host(target))}</span></span>
             </span>
-          </div>
-        </article>`;
-      })
-      .join("") +
-    `<a class="exhibit exhibit--more" href="${esc(R.links.github)}?tab=repositories" target="_blank" rel="noopener">
-      <h3 class="exhibit__title">Further exhibits on GitHub</h3>
-      <span class="exhibit__open">${esc(host(R.links.github))} →</span>
-    </a>`;
+            <figcaption><b>${esc(p.title.replace(/_/g, " "))}.</b> ${isDemo ? "The running service. Click the picture to try it." : "How it works, in ink. Click to read the code."}</figcaption>
+          </figure>
+        </a>
+      </article>`;
+    })
+    .join("");
+  $("#moreWork").href = R.links.github + "?tab=repositories";
 
-  /* --------------------------------------------------------------- §5 stack */
-  const exhibitOf = Object.fromEntries(R.projects.map((p, i) => [p.id, "Exh. " + LETTERS[i]]));
-  $("#featureList").innerHTML = R.skills
-    .map((g) => `<div class="fgroup"><h3>${esc(g.group)}</h3><ul>${g.items
-      .map((s) => {
-        const ids = s.projects || [];
-        return `<li ${ids.length ? `class="is-linked" tabindex="0" data-projects="${ids.join(",")}"` : ""}><span>${esc(s.name)}</span><span>${ids.map((id) => exhibitOf[id]).filter(Boolean).join(", ")}</span></li>`;
-      })
-      .join("")}</ul></div>`)
+  /* ============================================================= BUSINESS */
+  const para = (t) => {
+    const i = t.indexOf(" — ");
+    return i > 0 && i < 60 ? `<p><b>${rich(t.slice(0, i))}.</b> ${rich(t.slice(i + 3))}</p>` : `<p>${rich(t)}</p>`;
+  };
+  const story = (e, feature) => {
+    const [from, to] = splitPeriod(e.period);
+    const d = duration(e.period);
+    return `<article class="story ${feature ? "story--feature" : ""}">
+      <p class="story__when">${esc(from)} — ${esc(to || "")}<span>${d}</span></p>
+      <div class="story__head">${logo(e.logo, e.org)}<div><h3 class="story__title">${esc(e.title)}</h3><p class="story__org">${esc(e.org)}${e.place ? `, ${esc(e.place)}` : ""}</p></div></div>
+      <div class="story__body">${(e.points || []).map(para).join("")}</div>
+      ${e.stack && e.stack.length ? `<p class="filed">Tools: ${e.stack.map(esc).join(" · ")}</p>` : ""}
+    </article>`;
+  };
+  // the story with the most to say gets the wide middle column
+  const exp = R.experience || [];
+  const longest = exp.reduce((best, e, i) => ((e.points || []).join("").length > (exp[best].points || []).join("").length ? i : best), 0);
+  const order = exp.map((_, i) => i).filter((i) => i !== longest);
+  const arranged = [order[0], longest, ...order.slice(1)].filter((i) => i !== undefined);
+  $("#experience").innerHTML = arranged.map((i) => story(exp[i], i === longest)).join("");
+
+  /* ========================================================= PUBLIC RECORD */
+  $("#education").innerHTML = (R.education || [])
+    .map((e) => `<div class="edu"><p class="story__when">${esc(e.period)}</p><h4>${esc(e.title)}</h4><p><i>${esc(e.org)}</i></p>${(e.points || []).map((p) => `<p>${rich(p)}</p>`).join("")}</div>`)
+    .join("");
+  const certs = R.certificates || [];
+  $("#certCount").textContent = `— ${certs.filter((c) => c.status === "done").length} issued`;
+  $("#certs").innerHTML = certs
+    .map((c) => {
+      const pending = c.status !== "done";
+      const title = c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}</a>` : `<strong>${esc(c.title)}</strong>`;
+      return `<li class="${pending ? "pending" : ""}"><time>${pending ? "Pending" : esc(c.date || "—")}</time>${title}<em>${esc(c.issuer)}</em></li>`;
+    })
     .join("");
 
+  /* =============================================================== MARKETS */
+  const chapterNo = Object.fromEntries(projects.map((p, i) => [p.id, NUM[i] || String(i + 1)]));
+  $("#stack").innerHTML = R.skills
+    .map((g) => `<table class="listing"><caption>${esc(g.group)}</caption><tbody>${g.items
+      .map((s) => {
+        const ids = s.projects || [];
+        return ids.length
+          ? `<tr class="is-up" tabindex="0" data-projects="${ids.join(",")}" title="Used in chapter ${ids.map((id) => chapterNo[id]).join(" and ")}"><th scope="row">${esc(s.name)}</th><td>▲ ${ids.map((id) => chapterNo[id]).filter(Boolean).join(", ")}</td></tr>`
+          : `<tr><th scope="row">${esc(s.name)}</th><td>—</td></tr>`;
+      })
+      .join("")}</tbody></table>`)
+    .join("");
   const light = (ids) =>
-    $$(".exhibit[data-id]").forEach((c) => {
+    $$(".chapter[data-id]").forEach((c) => {
       c.classList.toggle("is-lit", !!ids && ids.includes(c.dataset.id));
       c.classList.toggle("is-dim", !!ids && !ids.includes(c.dataset.id));
     });
-  const feat = $("#featureList");
-  const onFeat = (e) => { const li = e.target.closest("li[data-projects]"); light(li ? li.dataset.projects.split(",") : null); };
-  feat.addEventListener("mouseover", onFeat);
-  feat.addEventListener("focusin", onFeat);
-  feat.addEventListener("mouseleave", () => light(null));
-  feat.addEventListener("focusout", () => light(null));
+  const mk = $("#stack");
+  const onRow = (e) => { const tr = e.target.closest("tr[data-projects]"); light(tr ? tr.dataset.projects.split(",") : null); };
+  mk.addEventListener("mouseover", onRow);
+  mk.addEventListener("focusin", onRow);
+  mk.addEventListener("mouseleave", () => light(null));
+  mk.addEventListener("focusout", () => light(null));
 
-  /* --------------------------------------------------------- §6 credentials */
-  const dateKey = (c) => {
-    if (c.status === "progress") return 1e9; // in-progress sorts as newest
-    const m = /([A-Za-z]{3})?\s*(\d{4})/.exec(c.date || "");
-    return m ? +m[2] * 12 + (m[1] ? MONTHS.indexOf(m[1].toLowerCase()) : 0) : -1;
-  };
-  const refOf = (c) => c.ref || (c.url ? c.url.split(/[/=]/).pop().slice(0, 14) : "—");
-  let sort = { key: "date", dir: -1 };
-
-  function renderCerts() {
-    const rows = [...(R.certificates || [])].sort((a, b) => {
-      const va = sort.key === "date" ? dateKey(a) : String(a[sort.key]).toLowerCase();
-      const vb = sort.key === "date" ? dateKey(b) : String(b[sort.key]).toLowerCase();
-      return (va > vb ? 1 : va < vb ? -1 : 0) * sort.dir;
-    });
-    $("#certRows").innerHTML = rows
-      .map((c) => {
-        const pending = c.status !== "done";
-        return `<tr class="${pending ? "pending" : ""}" ${c.url ? `data-url="${esc(c.url)}"` : ""}>
-          <td>${pending ? "In progress" : esc(c.date || "—")}</td>
-          <td>${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}</a>` : esc(c.title)}</td>
-          <td><span class="cert__issuer">${logo(c.logo, c.issuer)}${esc(c.issuer)}</span></td>
-          <td>${esc(refOf(c))}</td>
-        </tr>`;
-      })
-      .join("");
-    $$(".certs th button").forEach((b) =>
-      b.setAttribute("aria-sort", b.dataset.sort === sort.key ? (sort.dir === 1 ? "ascending" : "descending") : "none")
-    );
-  }
-  renderCerts();
-  $(".certs thead").addEventListener("click", (e) => {
-    const b = e.target.closest("button[data-sort]");
-    if (!b) return;
-    const k = b.dataset.sort;
-    sort = sort.key === k ? { key: k, dir: -sort.dir } : { key: k, dir: k === "date" ? -1 : 1 };
-    renderCerts();
-  });
-  $("#certRows").addEventListener("click", (e) => {
-    if (e.target.closest("a")) return;
-    const tr = e.target.closest("tr[data-url]");
-    if (tr) window.open(tr.dataset.url, "_blank", "noopener");
-  });
-
-  /* ------------------------------------------------------------ §7 contact */
+  /* =========================================================== CLASSIFIEDS */
   const tg = R.links.telegram && R.links.telegram.replace(/^@/, "");
-  const contacts = [
-    R.links.email && ["Email", R.links.email, "mailto:" + R.links.email],
-    R.links.phone && ["Phone", R.links.phone, "tel:" + R.links.phone.replace(/[^+\d]/g, "")],
-    tg && ["Telegram", "@" + tg, "https://t.me/" + tg],
-    R.links.linkedin && ["LinkedIn", host(R.links.linkedin), R.links.linkedin],
-    R.links.github && ["GitHub", host(R.links.github), R.links.github],
-    R.cv && ["Resume", "cv.pdf — 2 pages, A4", R.cv],
+  const demoProject = R.projects.find((p) => p.demo);
+  const ads = [
+    { head: "Talk shop", text: "Credit risk, production ML, scorecards or RAG — always glad to compare notes.", reply: R.links.linkedin && host(R.links.linkedin), href: R.links.linkedin, bold: true },
+    R.links.email && { head: "By post (electronic)", text: "For anything that needs a paper trail.", reply: R.links.email, href: "mailto:" + R.links.email },
+    R.links.phone && { head: "By telephone", text: "Baku business hours.", reply: R.links.phone, href: "tel:" + R.links.phone.replace(/[^+\d]/g, "") },
+    tg && { head: "By Telegram", text: "Quick questions welcome.", reply: "@" + tg, href: "https://t.me/" + tg },
+    R.cv && { head: "Resume, printed", text: "The whole file on two A4 pages — plain, no newsprint.", reply: "Download cv.pdf ↓", href: R.cv, download: true },
+    R.links.github && { head: "Archive open to public", text: "Notebooks, pipelines and experiments, from Kaggle to production.", reply: host(R.links.github), href: R.links.github },
+    demoProject && { head: "Demonstration daily", text: "A credit scoring engine, open around the clock. Bring your own applicant.", reply: host(demoProject.demo), href: demoProject.demo },
   ].filter(Boolean);
-  $("#contactList").innerHTML = contacts
-    .map(([k, label, href]) => `<dt>${k}</dt><dd><a href="${esc(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ""}${k === "Resume" ? " download" : ""}>${esc(label)}</a></dd>`)
+  $("#contact").innerHTML = ads
+    .map((a) => `<a class="ad ${a.bold ? "ad--bold" : ""}" href="${esc(a.href)}" ${/^https?:/.test(a.href) ? 'target="_blank" rel="noopener"' : ""}${a.download ? " download" : ""}>
+      <span class="ad__head">${esc(a.head)}</span><p>${esc(a.text)}</p><p class="ad__reply">${esc(a.reply)}</p></a>`)
     .join("");
 
-  /* ------------------------------------------------- running header state */
-  const navLinks = $$(".runhead__nav a");
+  /* ================================================== PRINT-ONLY RESUME (cv.pdf) */
+  const li = (t) => {
+    const i = t.indexOf(" — ");
+    return i > 0 && i < 60 ? `<li><b>${esc(plain(t.slice(0, i)))}</b> — ${esc(plain(t.slice(i + 3)))}</li>` : `<li>${esc(plain(t))}</li>`;
+  };
+  const cvItem = (e) => {
+    const [from, to] = splitPeriod(e.period);
+    return `<div class="cv__item"><div class="cv__when"><b>${esc(to || "")}</b>${esc(from)}${duration(e.period) ? `<br>${duration(e.period)}` : ""}</div>
+      <div><h3>${esc(e.title)}</h3><p class="cv__org">${esc(e.org)}${e.place ? `, ${esc(e.place)}` : ""}</p>
+      ${e.points && e.points.length ? `<ul>${e.points.map(li).join("")}</ul>` : ""}
+      ${e.stack && e.stack.length ? `<p class="cv__tools">Tools: ${e.stack.map(esc).join(" / ")}</p>` : ""}</div></div>`;
+  };
+  $("#cv").innerHTML = `
+    <h1>${esc(R.name)}</h1>
+    <p class="cv__role">${esc(R.role)}</p>
+    <p class="cv__lede">${esc(R.headline)}</p>
+    <p class="cv__contacts">${[
+      esc(R.location),
+      R.links.email && `<a href="mailto:${esc(R.links.email)}">${esc(R.links.email)}</a>`,
+      R.links.phone && esc(R.links.phone),
+      ...[R.links.linkedin, R.links.github, R.site].filter(Boolean).map((u) => `<a href="${esc(u)}">${esc(host(u))}</a>`),
+    ].filter(Boolean).join("  ·  ")}</p>
+    <dl class="cv__glance">${(R.glance || []).map((g) => `<div><dt>${esc(g.label)}</dt><dd>${esc(fill(g.value))}</dd></div>`).join("")}</dl>
+    <h2>Summary</h2><div class="cv__summary">${R.about.map((p) => `<p>${esc(plain(p))}</p>`).join("")}</div>
+    <h2>Experience</h2>${(R.experience || []).map(cvItem).join("")}
+    <h2>Education</h2>${(R.education || []).map(cvItem).join("")}
+    <h2>Projects</h2><div class="cv__projects">${R.projects.map((p) => `<div><h3>${esc(p.title.replace(/_/g, " "))}</h3><p>${esc(p.description)}</p>
+      ${p.metrics && p.metrics.length ? `<p class="cv__tools">${p.metrics.map((m) => `${esc(m.label)} ${esc(m.value)}`).join(" · ")}</p>` : ""}
+      <p class="cv__tools">${p.demo ? `<a href="${esc(p.demo)}">${esc(host(p.demo))}</a> · ` : ""}<a href="${esc(p.url)}">${esc(host(p.url))}</a></p></div>`).join("")}</div>
+    <h2>Skills</h2><div class="cv__skills">${R.skills.map((g) => `<div><b>${esc(g.group)}</b>${g.items.map((s) => esc(s.name)).join(", ")}</div>`).join("")}</div>
+    <h2>Certificates</h2><ul class="cv__certs">${certs.map((c) => `<li><time>${c.status === "done" ? esc(c.date || "—") : "In progress"}</time>${esc(c.title)} — <em>${esc(c.issuer)}</em></li>`).join("")}</ul>`;
+
+  /* ================================================ folio + current section */
+  const folio = $("#folio");
+  const masthead = $(".masthead");
+  const navLinks = $$(".folio__nav a");
   const sections = navLinks.map((a) => $(a.getAttribute("href")));
-  const where = $("#where");
   function onScroll() {
+    folio.classList.toggle("is-on", masthead.getBoundingClientRect().bottom < 0);
     let idx = -1;
-    sections.forEach((s, i) => { if (s && s.getBoundingClientRect().top < innerHeight * 0.35) idx = i; });
+    sections.forEach((s, i) => { if (s && s.getBoundingClientRect().top < innerHeight * 0.3) idx = i; });
     navLinks.forEach((a, i) => a.setAttribute("aria-current", i === idx ? "true" : "false"));
-    where.textContent = idx < 0 ? "Cover" : `§${idx + 1} of ${sections.length}`;
   }
   let raf = 0;
   addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(onScroll); }, { passive: true });
   onScroll();
 
-  /* ---------------------------------------------------------------- theme */
+  /* ================================================================= theme */
   $("#themeBtn").addEventListener("click", () => {
     const root = document.documentElement;
     root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";

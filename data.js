@@ -34,6 +34,28 @@ window.RESUME = {
     "My strongest ground is tabular ML for finance — credit scoring, probability-of-default models, interpretable WoE scorecards next to gradient boosting benchmarks. I'm now extending into LLM systems and retrieval-augmented generation.",
   ],
 
+  /* ------------------------------------------------------------------
+     NEWSPAPER — the front page story. Plain facts, written as news.
+     ------------------------------------------------------------------ */
+  paper: {
+    title: "The Daily Model",
+    motto: "Credit risk, production ML & retrieval — reported from Baku",
+    lead: {
+      kicker: "Banking",
+      headline: "Bank's 14-hour credit job now finishes in 45 minutes",
+      deck: "At Yelo Bank, data scientist Mehdi Mehdiyev rebuilt the pipeline behind personalized credit offers — and brought a dormant micro-business scoring engine back into production.",
+      byline: "Staff report · Baku",
+      body: [
+        "BAKU — When Mehdi Mehdiyev joined Yelo Bank as an intern data scientist in July 2025, the bank's Retail Personalized Offer model needed 14.5 hours to work through 5,000 clients. The model computes a maximum personalized credit offer for each client from salary, credit history and personal data, then predicts whether the client can actually carry it.",
+        "Mehdiyev rewrote the database connection layer from scratch, moved processing from linear to parallel with Python multiprocessing, added decorator-based logging to every function and made results persist to the database automatically. The same 5,000 clients now take 45 minutes — a 17–20× speed-up.",
+        "His second assignment was Micro-scoring Pre-Offer, an engine that finds micro-business clients with active loans and unused limits, runs them through risk rules, stop factors and business rules, and creates loan leads with two offers: refinancing or a parallel top-up. The engine had been dormant. He fixed its deprecated integrations, rewrote the data access layer, vectorized and parallelized inference, and put a FastAPI interface with live toggles in front of it.",
+        "Both systems shipped containerized with Docker, versioned on GitLab and monitored in Grafana. In February 2026 Mehdiyev moved into a full-time Data Scientist role at the bank.",
+      ],
+      quote: "Before my changes, 5,000 clients took 14.5 hours. After — 45 minutes.",
+      quoteBy: "Mehdi Mehdiyev, on the offer pipeline",
+    },
+  },
+
   links: {
     github: "https://github.com/Mekhty111",
     linkedin: "https://www.linkedin.com/in/mekhty-mekhtyev/",
@@ -112,6 +134,8 @@ window.RESUME = {
       id: "tax-rag",
       title: "Tax_RAG",
       kicker: "LLM · Retrieval-Augmented Generation",
+      headline: "Asking the tax code a question — and getting the source back",
+      deck: "A retrieval-augmented assistant that answers from the documents themselves instead of from memory.",
       description:
         "Question answering over tax documentation: documents are chunked and embedded, the most relevant passages are retrieved for each question, and an LLM answers grounded in those sources.",
       tags: ["Python", "LLM", "RAG", "Embeddings", "Vector search"],
@@ -123,6 +147,15 @@ window.RESUME = {
       id: "home-credit",
       title: "Home Credit Default Risk",
       kicker: "Credit risk · PD model",
+      headline: "A credit scorecard that holds up on data it has never seen",
+      deck: "Trained on 307,000 Home Credit applications, the interpretable scorecard keeps an AUC of 0.762 out of time — and now scores live applications in about ten milliseconds.",
+      body: [
+        "The project follows retail-banking methodology end to end: exploratory analysis across seven related tables, WoE/IV feature selection, a logistic-regression scorecard with a LightGBM benchmark, and validation on an out-of-time sample of 61,503 applications.",
+        "LightGBM edged ahead on raw accuracy (0.772 AUC out of time), but the scorecard — at 0.762, with a Gini of 0.524, KS of 0.399 and a population stability index of 0.0001 — was chosen for being fully interpretable, the property regulators ask for.",
+        "The result runs as Credence, a FastAPI service with a web interface: every decision comes back with a probability of default, a risk band and the factors behind it.",
+      ],
+      image: "assets/shots/home-credit.png",
+      imageAlt: "Screenshot of the Credence risk engine demo",
       description:
         "End-to-end probability-of-default pipeline on 7 Kaggle tables: EDA → WoE/IV feature selection → logistic-regression scorecard with a LightGBM benchmark → out-of-time validation, served through FastAPI with a Jinja2 UI.",
       tags: ["LightGBM", "Logistic Regression", "WoE / IV", "SHAP", "FastAPI"],
