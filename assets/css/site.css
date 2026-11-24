@@ -119,6 +119,7 @@ p, li, dd { text-wrap: pretty; }
 :focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 4px; }
 input, textarea { caret-color: var(--brass); }
 
+html.is-nested body { visibility: hidden; }
 .wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gut)); margin-inline: auto; padding-inline: max(var(--gut), env(safe-area-inset-left)) max(var(--gut), env(safe-area-inset-right)); }
 .num { font-variant-numeric: tabular-nums; }
 .muted { color: var(--moss); }

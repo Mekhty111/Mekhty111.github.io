@@ -5,6 +5,18 @@
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
+  /* Loaded inside one of this site's own demo windows (e.g. a demo's "Back to resume" link)?
+     Tell the parent page to close that window instead of nesting the resume in itself.
+     The inline script in <head> already hid this copy before first paint. */
+  if (window.self !== window.top) {
+    let nested = false;
+    try { nested = window.parent.location.origin === location.origin; } catch {}
+    if (nested) {
+      window.parent.postMessage({ type: "portfolio:framed" }, location.origin);
+      return;
+    }
+  }
+
   /* ------------------------------------------------ nav: scrolled + active section */
   const nav = $("[data-nav]");
   const onScroll = () => nav && nav.toggleAttribute("data-scrolled", scrollY > 8);
@@ -84,10 +96,38 @@
      It never tries to work around X-Frame-Options or CSP: if a host
      forbids framing, set `embed: false` and the window links out instead.
      ================================================================= */
+  /* The page's theme, handed to every demo so it opens in the same scheme.
+     The site is dark-only today; set <html data-theme="light"> and demos follow. */
+  const pageTheme = () => (document.documentElement.dataset.theme === "light" ? "light" : "dark");
+  const withTheme = (url) => {
+    try {
+      const u = new URL(url);
+      u.searchParams.set("theme", pageTheme());
+      return u.toString();
+    } catch {
+      return url;
+    }
+  };
+  const demos = new Set();
+
+  /* Messages from embedded demos:
+     - "credence:back": the demo's "Back to resume" button was pressed.
+     - "portfolio:framed": this site was loaded inside a demo window (nested resume). */
+  addEventListener("message", (e) => {
+    const type = e.data && e.data.type;
+    if (type !== "credence:back" && type !== "portfolio:framed") return;
+    demos.forEach((d) => d.frame && e.source === d.frame.contentWindow && d.close());
+  });
+  new MutationObserver(() => demos.forEach((d) => d.syncTheme())).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+
   class ProjectDemo extends HTMLElement {
     connectedCallback() {
       if (this._ready) return;
       this._ready = true;
+      demos.add(this);
       this.embed = this.dataset.embed === "true";
       this.timeoutMs = (Number(this.dataset.timeout) || 25) * 1000;
       this.stage = $(".demo__stage", this);
@@ -99,6 +139,7 @@
       this.urlLabel = $("[data-url]", this);
       this.fsButton = $("[data-fullscreen]", this);
       this.src = this.runLink.href;
+      this.syncLinks();
 
       if (this.embed) {
         this.runLink.addEventListener("click", (e) => {
@@ -125,9 +166,7 @@
     select(button) {
       this.views.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
       this.src = button.dataset.src;
-      this.opens.forEach((a) => (a.href = this.src));
-      this.runLink.href = this.src;
-      this.urlLabel.textContent = this.src.replace(/^https?:\/\//, "").replace(/\/$/, "");
+      this.syncLinks();
       const img = new Image();
       img.src = button.dataset.poster;
       const swap = () => { this.poster.src = img.src; this.poster.alt = button.dataset.alt; };
@@ -149,14 +188,57 @@
         this.frame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
         this.stage.append(this.frame);
       }
+      this.frame.style.colorScheme = pageTheme();
       this.frame.onload = () => {
         if (token !== this.token) return;
+        // A link inside the demo led back to this site: close the window instead of
+        // showing the resume inside the resume. Reading location only works same-origin,
+        // so for the demo's own pages this throws and is ignored.
+        try {
+          if (this.frame.contentWindow.location.origin === location.origin) return this.close();
+        } catch {}
         clearTimeout(this.timer);
         this.state = "live";
         this.setStatus(`<span class="visually-hidden">The live demo is ready.</span>`);
+        this.syncTheme();
       };
-      this.frame.src = this.src;
+      this.frame.src = withTheme(this.src);
       this.timer = setTimeout(() => token === this.token && this.fail(), this.timeoutMs);
+    }
+
+    /** Stops the demo and returns the window to its screenshot. */
+    close() {
+      clearTimeout(this.timer);
+      this.token = (this.token || 0) + 1;
+      if (this.frame) {
+        this.frame.onload = null;
+        this.frame.remove();
+        this.frame = null;
+      }
+      this.state = "idle";
+      this.setStatus(`<span class="visually-hidden">Demo closed. You are back on the resume.</span>`);
+      if (document.fullscreenElement === this) document.exitFullscreen().catch(() => {});
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      this.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      this.runLink.focus({ preventScroll: true });
+    }
+
+    /** Keeps "open in new tab" links and the address label in step with the selected view and theme. */
+    syncLinks() {
+      const themed = withTheme(this.src);
+      this.opens.forEach((a) => (a.href = themed));
+      this.runLink.href = themed;
+      this.urlLabel.textContent = this.src.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    }
+
+    /** Tells a running demo the page theme (apps that support it switch live). */
+    syncTheme() {
+      this.syncLinks();
+      if (!this.frame) return;
+      this.frame.style.colorScheme = pageTheme();
+      try {
+        this.frame.contentWindow.postMessage({ type: "credence:theme", theme: pageTheme() }, new URL(this.src).origin);
+      } catch {}
     }
 
     fail() {
@@ -167,7 +249,7 @@
         <span>The server at ${host} may be starting up. Try again, or open it in a new tab.</span>
         <span class="row">
           <button class="btn btn--quiet btn--sm" type="button" data-retry>Try again</button>
-          <a class="btn btn--primary btn--sm" href="${this.src}" target="_blank" rel="noopener">Open in new tab</a>
+          <a class="btn btn--primary btn--sm" href="${withTheme(this.src)}" target="_blank" rel="noopener">Open in new tab</a>
         </span>
       </div>`);
       $("[data-retry]", this).addEventListener("click", () => this.start());
@@ -183,7 +265,7 @@
           await this.requestFullscreen();
         }
       } catch {
-        window.open(this.src, "_blank", "noopener");
+        window.open(withTheme(this.src), "_blank", "noopener");
       }
     }
   }

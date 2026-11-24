@@ -58,6 +58,8 @@ export interface Metric {
 
 /** Column names for the results table. */
 export interface MetricColumns {
+  /** First column header. Default "Metric". */
+  label?: string;
   value: string;
   benchmark?: string;
   threshold?: string;
@@ -116,6 +118,8 @@ export interface Project {
   features?: string[];
   metrics?: Metric[];
   metricColumns?: MetricColumns;
+  /** Heading above the metrics table. Default "Results"; use e.g. "Setup" for configuration facts. */
+  metricsTitle?: string;
   /** Caption for the metrics table: where the numbers come from. */
   metricsSource?: string;
   /** Optional table, e.g. a decision policy. First row is the header. */

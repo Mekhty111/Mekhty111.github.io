@@ -120,25 +120,57 @@ const portfolio: Portfolio = {
     {
       id: "tax-rag",
       title: "Tax RAG",
+      product: "Vergi Köməkçisi",
       year: "2026",
-      layout: "secondary",
-      summary: "Question answering over tax documentation that cites the passage it answers from.",
+      layout: "feature",
+      // Facts below come from the running app's own /about endpoint and "Layihə haqqında" panel (checked 2026-11-24).
+      summary:
+        "A tax assistant in Azerbaijani that answers from the State Tax Service's official Q&A and cites every answer it draws on.",
       problem:
-        "Tax documentation is long and its exact wording matters. An LLM answering from memory can sound right and be wrong, so the answer has to come from the documents and show its source.",
+        "The State Tax Service has published thousands of answers to taxpayers' questions, and the exact wording matters. An LLM answering from memory can sound right and be wrong, so every answer has to come from the official texts and show where it came from.",
       approach: [
-        "Documents are split into chunks and embedded into a vector index.",
-        "For each question the most relevant passages are retrieved.",
-        "The LLM answers from those passages only and cites them.",
+        "Took the question-and-answer section of taxes.gov.az and dropped entries without an answer, leaving 3,549 official Q&A pairs.",
+        "Kept each question with its answer as one chunk (up to 1,500 characters) and embedded it with gemini-embedding-001 into a 768‑dimensional ChromaDB index.",
+        "Embeds each question the same way, retrieves the 5 nearest pairs and drops anything farther than 0.3 cosine distance.",
+        "Gemini 2.5 Flash (temperature 0.2) answers only from those passages, numbers its citations and says so when the context holds no answer.",
+        "Served with FastAPI: every response carries the sources with similarity and date, plus retrieval and generation times.",
       ],
       architecture: [
-        { title: "Documents", detail: "Tax documentation" },
-        { title: "Chunk + embed", detail: "Vector index" },
-        { title: "Retrieve", detail: "Top passages per question" },
-        { title: "Answer", detail: "LLM, grounded, with citation" },
+        { title: "taxes.gov.az Q&A", detail: "Official answers, unanswered entries removed" },
+        { title: "Chunk + embed", detail: "Question + answer, gemini-embedding-001" },
+        { title: "ChromaDB index", detail: "3,549 pairs, 768‑d, cosine" },
+        { title: "Retrieve", detail: "Top 5, distance ≤ 0.3" },
+        { title: "Generate", detail: "Gemini 2.5 Flash, numbered citations" },
+        { title: "FastAPI + UI", detail: "Answer, sources, timings, in Azerbaijani" },
       ],
-      stack: ["Python", "LLM", "RAG", "Embeddings", "Vector search"],
+      features: [
+        "Answers in Azerbaijani with numbered citations",
+        "Each source shown with its similarity score, date and a link to the original",
+        "Says plainly when the official answers don't cover the question",
+        "Suggested questions on VÖEN, income tax and VAT",
+        "Log of recent questions and a project panel describing the pipeline",
+      ],
+      metricsTitle: "Setup",
+      metricColumns: { label: "Part", value: "Configuration" },
+      metrics: [
+        { label: "Knowledge base", value: "3,549 Q&A pairs" },
+        { label: "Embeddings", value: "gemini-embedding-001, 768‑d" },
+        { label: "Retrieval", value: "Top 5, cosine ≤ 0.3" },
+        { label: "Generation", value: "Gemini 2.5 Flash, temp 0.2" },
+      ],
+      metricsSource: "Source: taxes.gov.az, Suallar və cavablar.",
+      stack: ["Python", "FastAPI", "ChromaDB", "Gemini 2.5 Flash", "gemini-embedding-001", "RAG"],
       // repo: "https://github.com/Mekhty111/Tax_RAG",  // returned 404 on 2026-11-24 (private?). Make it public, then uncomment.
-      // demo: { kind: "streamlit", url: "https://YOUR-APP.streamlit.app", embed: true, views: [...] },  // add when deployed
+      demo: {
+        kind: "fastapi",
+        url: "https://tax.mehdiyev.dev",
+        // Checked 2026-11-24: no X-Frame-Options or CSP frame-ancestors, so embedding works.
+        embed: true,
+        timeout: 30,
+        views: [
+          { label: "Answer with sources", path: "/", poster: "assets/shots/tax-answer.webp", posterAlt: "Vergi Köməkçisi answering what the personal income tax rate is, with numbered citations and the official answers it used as sources" },
+        ],
+      },
     },
   ],
 
