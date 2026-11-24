@@ -160,7 +160,9 @@ const portfolio: Portfolio = {
       ],
       metricsSource: "Source: taxes.gov.az, Suallar və cavablar.",
       stack: ["Python", "FastAPI", "ChromaDB", "Gemini 2.5 Flash", "gemini-embedding-001", "RAG"],
-      // repo: "https://github.com/Mekhty111/Tax_RAG",  // returned 404 on 2026-11-24 (private?). Make it public, then uncomment.
+      // Joint repository (GitHub, 2026-11-24: 9 commits by Mekhty111, 5 by Alihuseyn-Ismayilov).
+      repo: "https://github.com/Alihuseyn-Ismayilov/tax_rag",
+      collaborators: [{ name: "Alihuseyn Ismayilov", url: "https://github.com/Alihuseyn-Ismayilov" }],
       demo: {
         kind: "fastapi",
         url: "https://tax.mehdiyev.dev",

@@ -229,6 +229,15 @@ function dataTable(t: NonNullable<Project["table"]>): string {
   </table></div>`;
 }
 
+/** "Built with Name" credit line; names link to their profile when a URL is given. */
+function credits(p: Project, plain = false): string {
+  const people = p.collaborators ?? [];
+  if (!people.length) return "";
+  const names = people.map((c) => (c.url && !plain ? `<a class="text-link" href="${esc(c.url)}" ${ext}>${esc(c.name)}</a>` : esc(c.name)));
+  const list = names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}` : names[0];
+  return `Built with ${list}`;
+}
+
 function projectLinks(p: Project): string {
   return join([
     p.demo && `<a class="text-link" href="${esc(demoSrc(p.demo, p.demo.views[0]?.path ?? "/"))}" ${ext}>${icon("external")}<span>Live demo</span></a>`,
@@ -244,6 +253,7 @@ function featureProject(p: Project): string {
     <h3 class="case__title" id="${id}-title"><span translate="no">${esc(p.product || p.title)}</span>${p.product ? `<span class="case__alias">${esc(p.title)}</span>` : ""}</h3>
     <p class="case__summary">${esc(p.summary)}</p>
     <p class="case__links">${projectLinks(p)}</p>
+    ${p.collaborators?.length ? `<p class="case__credit">${credits(p)}</p>` : ""}
   </header>
   ${p.demo ? projectDemo(p) : ""}
   <div class="case__body">
@@ -408,7 +418,7 @@ function printCv(d: Portfolio, now: Date): string {
       ...[c.linkedin, c.github, d.site.url].filter(Boolean).map((u) => `<a href="${esc(u)}">${esc(host(u!))}</a>`),
     ].filter(Boolean).join("&nbsp;&nbsp;|&nbsp;&nbsp;")}</p>
     <h2>Projects</h2>${d.projects.map((p) => `<div class="cv__item"><div class="cv__when">${esc(p.year)}</div><div>
-      <h3>${esc(p.product ? `${p.product}: ${p.title}` : p.title)}</h3><p class="cv__org">${esc(p.summary)}</p>
+      <h3>${esc(p.product ? `${p.product}: ${p.title}` : p.title)}</h3><p class="cv__org">${esc(p.summary)}${p.collaborators?.length ? ` ${credits(p, true)}.` : ""}</p>
       <ul>${p.approach.slice(0, 3).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
       ${p.metrics?.length ? `<p class="cv__tools">${p.metrics.map((m) => `${esc(m.label)} ${esc(m.value)}`).join(", ")}</p>` : ""}
       <p class="cv__tools">${join([

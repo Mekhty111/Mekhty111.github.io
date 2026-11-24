@@ -336,6 +336,8 @@ html.is-nested body { visibility: hidden; }
 .case__summary { font-size: var(--step-2); line-height: 1.45; max-width: 46ch; }
 .case__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); grid-column: 2; font-size: var(--step-0); }
 .case__head .case__summary { grid-column: 2; grid-row: 1; }
+.case__credit { grid-column: 2; color: var(--lichen); font-size: var(--step-0); }
+.case__credit .text-link { display: inline; }
 .case__head .case__title { grid-column: 1; grid-row: 1 / span 2; align-self: start; }
 
 .case__body {
@@ -556,7 +558,7 @@ html.is-nested body { visibility: hidden; }
   .hero__intro { order: 6; margin-top: 0; }
   .proof { order: 7; margin-top: 0; }
   .case__links { grid-column: auto; }
-  .case__head .case__summary, .case__head .case__title { grid-column: auto; grid-row: auto; }
+  .case__head .case__summary, .case__head .case__title, .case__credit { grid-column: auto; grid-row: auto; }
   .split__head { position: static; }
   .split__head h2 { margin-bottom: var(--s-4); }
   .archive__row { grid-template-columns: minmax(0, 1fr) 16px; }

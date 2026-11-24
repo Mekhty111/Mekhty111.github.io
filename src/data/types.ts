@@ -126,6 +126,8 @@ export interface Project {
   table?: { caption: string; rows: string[][] };
   stack: string[];
   repo?: string;
+  /** People who built it with you; shown as "Built with …" in the case header and the CV. */
+  collaborators?: { name: string; url?: string }[];
   demo?: Demo;
   /** "feature" gets the large case study with the live window; "secondary" gets a compact layout. */
   layout: "feature" | "secondary";

@@ -25,7 +25,6 @@ The build stops with a message if a referenced file (poster, logo, CV, OG image)
 
 **Placeholders to fill**
 - `contact.email` is empty, so no email link is shown anywhere. Set it to publish one.
-- Tax RAG's `repo` is commented out because `github.com/Mekhty111/Tax_RAG` returns 404. Make the repo public, then uncomment it.
 - `about` and `person.intro` were drafted from your experience entries. Rewrite them in your own words.
 
 ## Add a project
@@ -36,7 +35,7 @@ Add an object to `projects`:
 - `layout: "secondary"` gets a compact two-column entry with a smaller pipeline.
 - Small repos go in `archive` (one line each).
 
-Fields: `summary`, `problem`, `approach[]`, `architecture[]` (ordered steps), `features[]`, `metrics[]` with `metricColumns`, `table` (e.g. a decision policy), `stack[]`, `repo`, `demo`. Only real numbers belong in `metrics`.
+Fields: `summary`, `problem`, `approach[]`, `architecture[]` (ordered steps), `features[]`, `metrics[]` with `metricColumns` and `metricsTitle` ("Results" by default, e.g. "Setup" for configuration), `table` (e.g. a decision policy), `stack[]`, `repo`, `collaborators[]` (shown as "Built with …"), `demo`. Only real numbers belong in `metrics`.
 
 ## Configure a live demo
 
